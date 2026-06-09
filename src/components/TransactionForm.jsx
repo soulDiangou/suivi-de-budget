@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CATEGORIES, CATEGORY_MAP, todayStr } from '../constants';
 
-const EMPTY = { description: '', amount: '', category: 'transport', date: todayStr() };
+const EMPTY = { description: '', amount: '', category: 'transport', date: todayStr(), note: '', isRecurring: false };
 
 export default function TransactionForm({ onAdd }) {
   const [type, setType] = useState('revenu');
@@ -24,18 +24,10 @@ export default function TransactionForm({ onAdd }) {
   return (
     <div className="form-card">
       <div className="type-toggle">
-        <button
-          type="button"
-          className={`type-toggle__btn ${type === 'revenu' ? 'active revenu' : ''}`}
-          onClick={() => setType('revenu')}
-        >
+        <button type="button" className={`type-toggle__btn ${type === 'revenu' ? 'active revenu' : ''}`} onClick={() => setType('revenu')}>
           <span className="type-toggle__icon">↑</span> Revenu
         </button>
-        <button
-          type="button"
-          className={`type-toggle__btn ${type === 'depense' ? 'active depense' : ''}`}
-          onClick={() => setType('depense')}
-        >
+        <button type="button" className={`type-toggle__btn ${type === 'depense' ? 'active depense' : ''}`} onClick={() => setType('depense')}>
           <span className="type-toggle__icon">↓</span> Dépense
         </button>
       </div>
@@ -57,26 +49,12 @@ export default function TransactionForm({ onAdd }) {
             <label htmlFor="amount">Montant</label>
             <div className="amount-wrapper">
               <span className="amount-prefix">€</span>
-              <input
-                id="amount"
-                type="number"
-                min="0.01"
-                step="0.01"
-                placeholder="0,00"
-                value={form.amount}
-                onChange={set('amount')}
-              />
+              <input id="amount" type="number" min="0.01" step="0.01" placeholder="0,00" value={form.amount} onChange={set('amount')} />
             </div>
           </div>
-
           <div className="field">
             <label htmlFor="date">Date</label>
-            <input
-              id="date"
-              type="date"
-              value={form.date}
-              onChange={set('date')}
-            />
+            <input id="date" type="date" value={form.date} onChange={set('date')} />
           </div>
         </div>
 
@@ -84,25 +62,27 @@ export default function TransactionForm({ onAdd }) {
           <div className="field">
             <label htmlFor="category">Catégorie</label>
             <div className="select-wrapper">
-              {selectedCat && (
-                <span
-                  className="select-dot"
-                  style={{ background: selectedCat.color }}
-                />
-              )}
-              <select
-                id="category"
-                value={form.category}
-                onChange={set('category')}
-                style={{ paddingLeft: selectedCat ? '2.2rem' : '0.9rem' }}
-              >
-                {CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
-                ))}
+              {selectedCat && <span className="select-dot" style={{ background: selectedCat.color }} />}
+              <select id="category" value={form.category} onChange={set('category')} style={{ paddingLeft: selectedCat ? '2.2rem' : '0.9rem' }}>
+                {CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
               </select>
             </div>
           </div>
         )}
+
+        <div className="field">
+          <label htmlFor="note">Note (optionnelle)</label>
+          <input id="note" type="text" placeholder="Ajouter une note…" value={form.note} onChange={set('note')} />
+        </div>
+
+        <label className="recurring-toggle">
+          <input
+            type="checkbox"
+            checked={form.isRecurring}
+            onChange={e => setForm(f => ({ ...f, isRecurring: e.target.checked }))}
+          />
+          <span>Répéter chaque mois</span>
+        </label>
 
         {error && <p className="form-error">{error}</p>}
 

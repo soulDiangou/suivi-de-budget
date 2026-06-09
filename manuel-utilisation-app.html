@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guide d'utilisation — Suivi de Budget</title>
+  <style>
+    :root {
+      --bg: #0B0D13;
+      --bg-card: #111420;
+      --bg-raised: #161b28;
+      --gold: #C9A84C;
+      --gold-dim: rgba(201,168,76,0.12);
+      --gold-border: rgba(201,168,76,0.35);
+      --green: #4CAF7D;
+      --green-dim: rgba(76,175,125,0.1);
+      --green-border: rgba(76,175,125,0.3);
+      --red: #E05C5C;
+      --red-dim: rgba(224,92,92,0.1);
+      --blue: #5B9BD5;
+      --blue-dim: rgba(91,155,213,0.1);
+      --blue-border: rgba(91,155,213,0.3);
+      --purple: #9B7FD4;
+      --purple-dim: rgba(155,127,212,0.1);
+      --text-1: #DDD8CC;
+      --text-2: #7A8499;
+      --text-3: #3d4457;
+      --border: rgba(255,255,255,0.07);
+      --border-md: rgba(255,255,255,0.11);
+      --radius: 14px;
+      --radius-sm: 9px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      background-image:
+        radial-gradient(ellipse 60% 50% at 10% 15%, rgba(201,168,76,0.04) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 90% 80%, rgba(91,155,213,0.03) 0%, transparent 55%);
+      background-attachment: fixed;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 56px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(17,20,32,0.8) 0%, transparent 100%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-border);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 6vw, 52px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span { color: var(--gold); }
+
+    .hero-subtitle {
+      font-size: 17px;
+      color: var(--text-2);
+      max-width: 520px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 26px; font-weight: 700; color: var(--gold); display: block; }
+    .hero-stat-label { font-size: 12px; color: var(--text-3); }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,13,19,0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-inner {
+      display: flex;
+      gap: 2px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 10px 0;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-2);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.18s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover { color: var(--text-1); background: var(--bg-card); }
+
+    .nav-btn.active {
+      background: var(--gold-dim);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+
+    .nav-icon { font-size: 14px; }
+
+    /* ── SECTIONS ── */
+    .section { display: none; max-width: 860px; margin: 0 auto; padding: 52px 24px 80px; }
+    .section.active { display: block; }
+
+    /* ── TYPOGRAPHY ── */
+    h2 { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    h3 { font-size: 17px; font-weight: 600; color: var(--text-1); margin: 36px 0 14px; }
+    p  { color: var(--text-1); margin-bottom: 14px; }
+    .lead { font-size: 16px; color: var(--text-2); margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    strong { color: #fff; font-weight: 600; }
+    ul, ol { padding-left: 22px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; color: var(--text-1); }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .feature-card:hover {
+      border-color: var(--gold-border);
+      transform: translateY(-2px);
+    }
+
+    .feature-card .fc-icon {
+      font-size: 26px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .feature-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: var(--text-2);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 40px;
+      bottom: 0;
+      width: 1px;
+      background: var(--border-md);
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-border);
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-body {
+      padding-bottom: 28px;
+      flex: 1;
+    }
+
+    .step-body h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+      padding-top: 6px;
+    }
+
+    .step-body p, .step-body ul {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }
+
+    /* ── TIPS ── */
+    .tip {
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 14px 0;
+      font-size: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .tip-content { flex: 1; }
+    .tip-content strong { display: block; margin-bottom: 3px; font-size: 13px; }
+
+    .tip.gold   { background: var(--gold-dim);   border-left: 3px solid var(--gold); }
+    .tip.green  { background: var(--green-dim);  border-left: 3px solid var(--green); }
+    .tip.blue   { background: var(--blue-dim);   border-left: 3px solid var(--blue); }
+    .tip.purple { background: var(--purple-dim); border-left: 3px solid var(--purple); }
+    .tip.red    { background: var(--red-dim);    border-left: 3px solid var(--red); }
+
+    /* ── MOCK UI (visual simulations) ── */
+    .mock {
+      background: #0d0f18;
+      border: 1px solid var(--border-md);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 18px 0;
+    }
+
+    .mock-header {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mock-dots { display: flex; gap: 5px; }
+    .mock-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mock-dot:nth-child(1) { background: #E05C5C; }
+    .mock-dot:nth-child(2) { background: #C9A84C; }
+    .mock-dot:nth-child(3) { background: #4CAF7D; }
+
+    .mock-body { padding: 20px; }
+
+    /* Simulated stat card */
+    .sim-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+
+    .sim-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .sim-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 4px; }
+    .sim-stat-val { font-size: 18px; font-weight: 700; }
+    .sim-stat-val.green { color: var(--green); }
+    .sim-stat-val.red   { color: var(--red); }
+    .sim-stat-val.gold  { color: var(--gold); }
+
+    /* Simulated form row */
+    .sim-form { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .sim-toggle { display: flex; gap: 6px; margin-bottom: 12px; }
+    .sim-btn {
+      flex: 1;
+      padding: 7px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+    .sim-btn.active-green { background: var(--green-dim); color: var(--green); border-color: var(--green-border); }
+    .sim-btn.active-red   { background: var(--red-dim);   color: var(--red);   border-color: rgba(224,92,92,0.3); }
+    .sim-btn.inactive     { color: var(--text-3); }
+
+    .sim-field { margin-bottom: 10px; }
+    .sim-field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 4px; }
+    .sim-field-input {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-md);
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text-2);
+      width: 100%;
+    }
+    .sim-field-input.filled { color: var(--text-1); }
+    .sim-field-input.gold-focus { border-color: var(--gold-border); box-shadow: 0 0 0 3px var(--gold-dim); }
+
+    .sim-submit {
+      width: 100%;
+      padding: 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .sim-submit.green { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+    .sim-submit.red   { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(224,92,92,0.3); }
+
+    /* Simulated transaction row */
+    .sim-tx { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .sim-tx:last-child { border-bottom: none; }
+    .sim-tx-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .sim-tx-icon.green { background: var(--green-dim); border: 1px solid var(--green-border); }
+    .sim-tx-icon.red   { background: var(--red-dim);   border: 1px solid rgba(224,92,92,0.3); }
+    .sim-tx-info { flex: 1; }
+    .sim-tx-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+    .sim-tx-date { font-size: 11px; color: var(--text-3); }
+    .sim-tx-note { font-size: 11px; color: var(--text-3); font-style: italic; }
+    .sim-tx-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+    .sim-tx-badge.cat { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(155,127,212,0.3); }
+    .sim-tx-badge.rev { background: var(--green-dim);  color: var(--green);  border: 1px solid var(--green-border); }
+    .sim-tx-amount { font-size: 13px; font-weight: 600; font-family: monospace; }
+    .sim-tx-amount.green { color: var(--green); }
+    .sim-tx-amount.red   { color: var(--red); }
+    .sim-tx-actions { display: flex; gap: 4px; opacity: 0.7; }
+    .sim-tx-action { width: 24px; height: 24px; border-radius: 5px; border: 1px solid var(--border-md); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-3); }
+    .sim-tx-action.edit { border-color: var(--gold-border); color: var(--gold); background: var(--gold-dim); }
+    .sim-tx-action.del  { border-color: rgba(224,92,92,0.3); color: var(--red); background: var(--red-dim); }
+
+    /* Simulated budget bar */
+    .sim-budget { margin-bottom: 12px; }
+    .sim-budget-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .sim-budget-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sim-budget-name { font-size: 13px; color: var(--text-1); flex: 1; }
+    .sim-budget-vals { font-size: 12px; color: var(--text-3); }
+    .sim-bar { height: 5px; background: var(--bg-raised); border-radius: 99px; overflow: hidden; }
+    .sim-bar-fill { height: 100%; border-radius: 99px; }
+
+    /* Simulated goal */
+    .sim-goal { background: var(--bg-raised); border: 1px solid var(--border-md); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+    .sim-goal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .sim-goal-name { font-size: 14px; font-weight: 600; color: var(--text-1); }
+    .sim-goal-pct { font-size: 12px; color: var(--gold); font-weight: 600; }
+
+    /* Simulated search */
+    .sim-search {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-border);
+      border-radius: 9px;
+      padding: 10px 14px 10px 36px;
+      font-size: 13px;
+      color: var(--text-2);
+      width: 100%;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    /* Simulated trend */
+    .sim-trend { display: flex; gap: 20px; flex-wrap: wrap; }
+    .sim-trend-item { flex: 1; min-width: 120px; }
+    .sim-trend-label { font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+    .sim-trend-val { font-size: 15px; font-weight: 600; font-family: monospace; }
+    .sim-trend-badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-left: 6px; }
+    .sim-trend-badge.down { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+    .sim-trend-badge.up   { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(224,92,92,0.3); }
+
+    /* ── ACCORDION ── */
+    .accordion { margin-bottom: 8px; }
+    .accordion-btn {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s;
+    }
+    .accordion-btn:hover { border-color: var(--gold-border); background: var(--gold-dim); }
+    .accordion-btn.open { border-color: var(--gold-border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+    .accordion-left { display: flex; align-items: center; gap: 12px; }
+    .accordion-icon { font-size: 18px; }
+    .accordion-title { font-size: 14px; font-weight: 600; color: #fff; }
+    .accordion-sub   { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+    .accordion-arrow { color: var(--text-3); font-size: 12px; transition: transform 0.2s; }
+    .accordion-btn.open .accordion-arrow { transform: rotate(180deg); color: var(--gold); }
+    .accordion-body {
+      display: none;
+      background: var(--bg-raised);
+      border: 1px solid var(--gold-border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      padding: 18px 20px;
+    }
+    .accordion-body.open { display: block; }
+
+    /* ── KEYBOARD SHORTCUT ── */
+    .kbd { display: inline-block; background: var(--bg-raised); border: 1px solid var(--border-md); border-radius: 4px; padding: 1px 8px; font-family: monospace; font-size: 12px; color: var(--text-2); }
+
+    /* ── INLINE CODE ── */
+    .ic { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px; font-size: 12.5px; color: var(--gold); font-family: monospace; }
+
+    /* ── CATEGORY DOTS ── */
+    .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .cat-pill { display: flex; align-items: center; gap: 6px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-2); }
+    .cat-pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    /* ── FOOTER ── */
+    .footer { text-align: center; padding: 40px 24px; color: var(--text-3); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
+    .footer strong { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .sim-stats { grid-template-columns: 1fr; }
+      .hero-stats { gap: 20px; }
+      .section { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero">
+  <div class="hero-badge">📖 Guide d'utilisation</div>
+  <h1>Maîtriser votre<br><span>Suivi de Budget</span></h1>
+  <p class="hero-subtitle">Tout ce qu'il faut savoir pour gérer vos finances personnelles, de la première transaction jusqu'aux fonctionnalités avancées.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="hero-stat-num">8</span><span class="hero-stat-label">Catégories</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">11</span><span class="hero-stat-label">Fonctionnalités</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">100%</span><span class="hero-stat-label">Privé & local</span></div>
+  </div>
+</header>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="show('intro')"><span class="nav-icon">🏠</span> Introduction</button>
+    <button class="nav-btn" onclick="show('demarrer')"><span class="nav-icon">🚀</span> Démarrer</button>
+    <button class="nav-btn" onclick="show('transactions')"><span class="nav-icon">💳</span> Transactions</button>
+    <button class="nav-btn" onclick="show('analyse')"><span class="nav-icon">📊</span> Analyses</button>
+    <button class="nav-btn" onclick="show('avance')"><span class="nav-icon">⚙️</span> Avancé</button>
+    <button class="nav-btn" onclick="show('faq')"><span class="nav-icon">❓</span> FAQ</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- INTRO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section active" id="intro">
+  <h2>Bienvenue dans Suivi de Budget</h2>
+  <p class="lead">Une application simple et élégante pour suivre vos revenus et dépenses, comprendre où va votre argent, et atteindre vos objectifs financiers. Vos données restent sur votre appareil — rien n'est envoyé sur internet.</p>
+
+  <div class="tip blue">
+    <span class="tip-icon">💡</span>
+    <div class="tip-content">
+      <strong>Pas besoin de créer un compte</strong>
+      L'application fonctionne directement dans votre navigateur. Vos données sont sauvegardées automatiquement sur votre ordinateur.
+    </div>
+  </div>
+
+  <h3>À quoi sert cette application ?</h3>
+  <div class="card-grid">
+    <div class="feature-card">
+      <span class="fc-icon">📥</span>
+      <h4>Enregistrer vos finances</h4>
+      <p>Ajoutez chaque revenu (salaire, freelance…) et chaque dépense (loyer, courses…) au fil du temps.</p>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">📊</span>
+      <h4>Visualiser en un coup d'œil</h4>
+      <p>Le tableau de bord affiche immédiatement vos revenus totaux, vos dépenses et votre solde disponible.</p>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🍩</span>
+      <h4>Comprendre vos dépenses</h4>
+      <p>Un graphique montre la part de chaque catégorie (loyer, transport, alimentation…) dans vos dépenses.</p>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">📅</span>
+      <h4>Suivre mois par mois</h4>
+      <p>Filtrez par mois pour analyser chaque période et comparer votre évolution dans le temps.</p>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">💰</span>
+      <h4>Fixer des budgets</h4>
+      <p>Définissez un plafond de dépenses par catégorie et suivez si vous restez dans les limites.</p>
+    </div>
+    <div class="feature-card">
+      <span class="fc-icon">🎯</span>
+      <h4>Atteindre vos objectifs</h4>
+      <p>Créez des objectifs d'épargne (vacances, voiture…) et suivez votre progression vers chacun.</p>
+    </div>
+  </div>
+
+  <h3>Vue d'ensemble de l'interface</h3>
+  <div class="mock">
+    <div class="mock-header">
+      <div class="mock-dots"><div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div></div>
+      Aperçu de l'application
+    </div>
+    <div class="mock-body">
+      <!-- Stats -->
+      <div class="sim-stats">
+        <div class="sim-stat">
+          <div class="sim-stat-label">Revenus totaux</div>
+          <div class="sim-stat-val green">3 200,00 €</div>
+        </div>
+        <div class="sim-stat">
+          <div class="sim-stat-label">Dépenses totales</div>
+          <div class="sim-stat-val red">−1 155,00 €</div>
+        </div>
+        <div class="sim-stat">
+          <div class="sim-stat-label">Solde restant</div>
+          <div class="sim-stat-val gold">2 045,00 €</div>
+        </div>
+      </div>
+
+      <!-- Trend mini -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;">
+        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3); margin-bottom: 8px;">Tendances — Juin vs Mai</div>
+        <div class="sim-trend">
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Dépenses</div>
+            <div class="sim-trend-val red">1 155 € <span class="sim-trend-badge down">▼ 8.1%</span></div>
+          </div>
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Revenus</div>
+            <div class="sim-trend-val green">3 200 € <span class="sim-trend-badge down">▼ 0%</span></div>
+          </div>
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Solde</div>
+            <div class="sim-trend-val gold">2 045 €</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px;">
+        <div class="sim-tx">
+          <div class="sim-tx-icon green">↑</div>
+          <div class="sim-tx-info"><div class="sim-tx-name">Salaire de juin</div><div class="sim-tx-date">9 juin 2026</div></div>
+          <div class="sim-tx-badge rev">Revenu</div>
+          <div class="sim-tx-amount green">+3 200,00 €</div>
+          <div class="sim-tx-actions"><div class="sim-tx-action edit">✏</div><div class="sim-tx-action del">🗑</div></div>
+        </div>
+        <div class="sim-tx">
+          <div class="sim-tx-icon red">↓</div>
+          <div class="sim-tx-info"><div class="sim-tx-name">Loyer</div><div class="sim-tx-date">1 juin 2026 · payé par virement</div></div>
+          <div class="sim-tx-badge cat">Logement</div>
+          <div class="sim-tx-amount red">−850,00 €</div>
+          <div class="sim-tx-actions"><div class="sim-tx-action edit">✏</div><div class="sim-tx-action del">🗑</div></div>
+        </div>
+        <div class="sim-tx">
+          <div class="sim-tx-icon red">↓</div>
+          <div class="sim-tx-info"><div class="sim-tx-name">Courses Carrefour</div><div class="sim-tx-date">7 juin 2026</div></div>
+          <div class="sim-tx-badge" style="background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid var(--gold-border);">Alimentation</div>
+          <div class="sim-tx-amount red">−95,00 €</div>
+          <div class="sim-tx-actions"><div class="sim-tx-action edit">✏</div><div class="sim-tx-action del">🗑</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Les 8 catégories disponibles</h3>
+  <p>Chaque dépense est classée dans une catégorie pour faciliter l'analyse :</p>
+  <div class="cat-grid">
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#5B9BD5"></div> Transport</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#C9A84C"></div> Alimentation</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#9B7FD4"></div> Logement</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#E05C5C"></div> Divertissement</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#4CAF7D"></div> Santé</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#E0845C"></div> Vêtements</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#5CD4C4"></div> Loisirs</div>
+    <div class="cat-pill"><div class="cat-pill-dot" style="background:#8A9BAD"></div> Autres</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- DÉMARRER -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="demarrer">
+  <h2>Premiers pas</h2>
+  <p class="lead">Vous venez d'ouvrir l'application pour la première fois ? Voici comment la prendre en main en moins de 5 minutes.</p>
+
+  <h3>Votre première transaction</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Choisissez le type de transaction</h4>
+        <p>En haut du formulaire "Nouvelle transaction", deux boutons vous permettent de basculer entre <strong>Revenu</strong> et <strong>Dépense</strong>. Le bouton sélectionné se colore en vert (revenu) ou en rouge (dépense).</p>
+        <div class="mock" style="max-width: 340px;">
+          <div class="mock-body" style="padding: 12px;">
+            <div class="sim-toggle">
+              <div class="sim-btn active-green">↑ Revenu</div>
+              <div class="sim-btn inactive">↓ Dépense</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Saisissez la description</h4>
+        <p>Écrivez ce que c'est : <em>"Salaire de juin"</em>, <em>"Loyer"</em>, <em>"Courses Lidl"</em>… Soyez précis pour retrouver facilement vos transactions plus tard.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Entrez le montant</h4>
+        <p>Tapez uniquement le nombre, sans le symbole €. Exemple : <strong>850</strong> pour 850 €. Vous pouvez mettre des décimales : <strong>14.90</strong> pour 14,90 €.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Vérifiez la date</h4>
+        <p>La date d'aujourd'hui est remplie automatiquement. Vous pouvez la modifier si vous entrez une transaction rétrospectivement (une dépense oubliée de la semaine dernière, par exemple).</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Pour une dépense : choisissez la catégorie</h4>
+        <p>Un menu déroulant apparaît uniquement pour les dépenses. Choisissez la catégorie la plus proche. Si rien ne correspond, utilisez <strong>"Autres"</strong>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h4>Cliquez sur "Ajouter"</h4>
+        <p>La transaction apparaît instantanément dans votre historique et le tableau de bord se met à jour. Rien à sauvegarder manuellement — c'est automatique.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip green">
+    <span class="tip-icon">✅</span>
+    <div class="tip-content">
+      <strong>Bonne habitude à prendre</strong>
+      Enregistrez vos transactions le soir même ou le week-end. Plus vous attendez, plus vous risquez d'oublier des dépenses. 5 minutes par semaine suffisent à tenir un budget à jour.
+    </div>
+  </div>
+
+  <h3>Que voir après l'ajout ?</h3>
+  <p>Dès que vous ajoutez votre première transaction, l'application affiche :</p>
+  <ul>
+    <li>Le <strong>tableau de bord</strong> se met à jour : revenus, dépenses, solde</li>
+    <li>La transaction apparaît dans l'<strong>historique</strong> en bas de page</li>
+    <li>Si c'est une dépense, elle s'ajoute au <strong>graphique</strong> de répartition</li>
+  </ul>
+
+  <div class="tip gold">
+    <span class="tip-icon">💾</span>
+    <div class="tip-content">
+      <strong>Sauvegarde automatique</strong>
+      Vos données sont sauvegardées automatiquement dans votre navigateur à chaque modification. Vous pouvez fermer l'onglet et revenir plus tard : tout sera là.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TRANSACTIONS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="transactions">
+  <h2>Gérer les transactions</h2>
+  <p class="lead">Tout ce que vous pouvez faire avec vos transactions : ajouter, modifier, supprimer, rechercher, annoter et automatiser.</p>
+
+  <div class="accordion">
+    <button class="accordion-btn open" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">✏️</span><div><div class="accordion-title">Modifier une transaction</div><div class="accordion-sub">Corriger une erreur après l'ajout</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body open">
+      <p>Passez la souris sur une ligne de l'historique : un bouton <strong>crayon ✏</strong> apparaît à droite. Cliquez dessus pour ouvrir une fenêtre de modification pré-remplie.</p>
+      <p>Vous pouvez changer : le type (revenu/dépense), la description, le montant, la date, la catégorie et la note. Cliquez sur <strong>"Enregistrer"</strong> pour valider, ou <strong>"Annuler"</strong> pour ignorer vos changements.</p>
+      <div class="mock" style="max-width: 380px;">
+        <div class="mock-body" style="padding: 12px;">
+          <div class="sim-tx" style="border-radius: 8px; background: rgba(201,168,76,0.05); border: 1px solid var(--gold-border); padding: 10px; border-bottom: none; margin: 0;">
+            <div class="sim-tx-icon red">↓</div>
+            <div class="sim-tx-info"><div class="sim-tx-name">Loyer</div><div class="sim-tx-date">1 juin 2026</div></div>
+            <div class="sim-tx-amount red">−850,00 €</div>
+            <div class="sim-tx-actions"><div class="sim-tx-action edit" style="opacity: 1;">✏</div><div class="sim-tx-action del" style="opacity: 1;">🗑</div></div>
+          </div>
+          <div style="font-size: 11px; color: var(--gold); text-align: center; margin-top: 8px;">↑ Au survol, les boutons apparaissent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🗑️</span><div><div class="accordion-title">Supprimer une transaction</div><div class="accordion-sub">Effacer une entrée incorrecte</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Passez la souris sur une transaction : un bouton <strong>corbeille 🗑</strong> apparaît à droite, en rouge. Cliquez dessus pour supprimer définitivement la transaction.</p>
+      <div class="tip red">
+        <span class="tip-icon">⚠️</span>
+        <div class="tip-content">
+          <strong>La suppression est définitive</strong>
+          Il n'y a pas de corbeille ni d'annulation. Avant de supprimer, assurez-vous que c'est bien cette transaction que vous voulez effacer.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">📝</span><div><div class="accordion-title">Ajouter une note</div><div class="accordion-sub">Préciser le contexte d'une transaction</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Dans le formulaire d'ajout, un champ <strong>"Note (optionnelle)"</strong> vous permet d'ajouter un commentaire libre. Par exemple :</p>
+      <ul>
+        <li>Pour un loyer : <em>"inclut charges"</em></li>
+        <li>Pour des courses : <em>"repas du week-end avec la famille"</em></li>
+        <li>Pour une dépense médicale : <em>"remboursement prévu par la mutuelle"</em></li>
+      </ul>
+      <p>La note apparaît en italique sous la date dans l'historique. Elle est aussi <strong>cherchable</strong> via la barre de recherche.</p>
+      <div class="mock" style="max-width: 380px;">
+        <div class="mock-body" style="padding: 12px;">
+          <div class="sim-tx" style="border-bottom: none; margin: 0;">
+            <div class="sim-tx-icon red">↓</div>
+            <div class="sim-tx-info">
+              <div class="sim-tx-name">Loyer</div>
+              <div class="sim-tx-date">1 juin 2026 <span class="sim-tx-note"> · inclut charges</span></div>
+            </div>
+            <div class="sim-tx-amount red">−850,00 €</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">↻</span><div><div class="accordion-title">Transactions récurrentes</div><div class="accordion-sub">Automatiser les dépenses mensuelles fixes</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Certaines dépenses reviennent chaque mois au même montant : loyer, abonnements Netflix, Spotify, gym… Pour ne pas avoir à les ressaisir chaque mois :</p>
+      <div class="steps" style="margin-top: 14px;">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Lors de l'ajout, cochez "Répéter chaque mois"</h4>
+            <p>La case à cocher se trouve juste avant le bouton "Ajouter".</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>La transaction est marquée avec le badge ↻</h4>
+            <p>Dans l'historique, un badge doré ↻ apparaît à côté du nom pour identifier les transactions récurrentes.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Chaque mois, une copie est créée automatiquement</h4>
+            <p>Au prochain chargement de l'application (au début du mois), une copie est ajoutée pour le mois en cours, à la même date.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tip gold">
+        <span class="tip-icon">💡</span>
+        <div class="tip-content">
+          <strong>Idéal pour</strong>
+          Loyer, crédit, abonnements (streaming, salle de sport, transport)… Tout ce qui a le même montant chaque mois.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🔍</span><div><div class="accordion-title">Rechercher une transaction</div><div class="accordion-sub">Trouver rapidement dans l'historique</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Au-dessus de l'historique, une barre de recherche vous permet de filtrer instantanément les transactions. La recherche porte sur :</p>
+      <ul>
+        <li>La <strong>description</strong> de la transaction</li>
+        <li>La <strong>note</strong> ajoutée</li>
+      </ul>
+      <p>La liste se met à jour à chaque lettre tapée. Pour effacer la recherche, cliquez sur le <strong>✕</strong> à droite, ou effacez le texte.</p>
+      <div class="mock" style="max-width: 380px;">
+        <div class="mock-body" style="padding: 12px;">
+          <div style="position: relative; margin-bottom: 10px;">
+            <div style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 12px;">🔍</div>
+            <div class="sim-search" style="display: block; padding-left: 32px;">loyer</div>
+          </div>
+          <div class="sim-tx" style="border-bottom: none; margin: 0;">
+            <div class="sim-tx-icon red">↓</div>
+            <div class="sim-tx-info"><div class="sim-tx-name">Loyer</div><div class="sim-tx-date">1 juin 2026</div></div>
+            <div class="sim-tx-amount red">−850,00 €</div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-3); text-align: center; margin-top: 8px;">1 résultat affiché</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">📤</span><div><div class="accordion-title">Exporter et importer (CSV)</div><div class="accordion-sub">Sauvegarder ou transférer vos données</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Au-dessus de l'historique, deux boutons vous permettent d'échanger des données avec d'autres outils :</p>
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↓ Export — Télécharger vos données</h4>
+      <p>Cliquez sur <strong>"↓ Export"</strong> pour télécharger toutes vos transactions au format CSV. Ce fichier s'ouvre dans Excel, Google Sheets ou LibreOffice. Utile pour :</p>
+      <ul>
+        <li>Faire une sauvegarde de vos données</li>
+        <li>Analyser en détail dans un tableur</li>
+        <li>Transférer vers une autre application</li>
+      </ul>
+
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↑ Import — Importer depuis votre banque</h4>
+      <p>Cliquez sur <strong>"↑ Import"</strong> et sélectionnez un fichier CSV. L'application reconnaît automatiquement les colonnes Date, Description et Montant. Les montants positifs deviennent des revenus, les négatifs des dépenses.</p>
+      <div class="tip blue">
+        <span class="tip-icon">🏦</span>
+        <div class="tip-content">
+          <strong>Exporter depuis votre banque</strong>
+          La plupart des banques en ligne (Boursorama, N26, Revolut, Société Générale…) permettent d'exporter votre historique en CSV. Téléchargez-le et importez-le ici.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ANALYSE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="analyse">
+  <h2>Analyser vos finances</h2>
+  <p class="lead">L'application va au-delà du simple enregistrement : elle vous aide à comprendre vos habitudes de dépenses et à prendre de meilleures décisions.</p>
+
+  <h3>Le tableau de bord</h3>
+  <p>Trois chiffres clés sont affichés en permanence en haut de la page :</p>
+  <div class="mock">
+    <div class="mock-body">
+      <div class="sim-stats">
+        <div class="sim-stat">
+          <div class="sim-stat-label">Revenus totaux</div>
+          <div class="sim-stat-val green">3 200,00 €</div>
+          <div style="font-size: 11px; color: var(--text-3); margin-top: 6px;">La somme de tous vos revenus</div>
+        </div>
+        <div class="sim-stat">
+          <div class="sim-stat-label">Dépenses totales</div>
+          <div class="sim-stat-val red">−1 155,00 €</div>
+          <div style="font-size: 11px; color: var(--text-3); margin-top: 6px;">La somme de toutes vos dépenses</div>
+        </div>
+        <div class="sim-stat">
+          <div class="sim-stat-label">Solde restant</div>
+          <div class="sim-stat-val gold">2 045,00 €</div>
+          <div style="font-size: 11px; color: var(--text-3); margin-top: 6px;">Revenus − Dépenses</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip blue">
+    <span class="tip-icon">📌</span>
+    <div class="tip-content">
+      <strong>Le solde en haut à droite de l'écran</strong>
+      Le solde reste visible dans l'en-tête même quand vous faites défiler la page. Si un mois est sélectionné, il affiche le nom du mois plutôt que "Solde disponible".
+    </div>
+  </div>
+
+  <h3>Tendances : comparer avec le mois précédent</h3>
+  <p>La carte "Tendances" compare automatiquement le mois en cours avec le mois précédent. Elle vous montre, pour chaque indicateur, si vous avez dépensé plus ou moins :</p>
+
+  <div class="mock">
+    <div class="mock-body">
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-3);">Tendances</div>
+          <div style="font-size: 12px; color: var(--text-3);"><span style="color: var(--text-1);">Juin</span> vs <span>Mai</span></div>
+        </div>
+        <div class="sim-trend">
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Revenus</div>
+            <div class="sim-trend-val green">3 200 € <span class="sim-trend-badge down">stable</span></div>
+          </div>
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Dépenses</div>
+            <div class="sim-trend-val red">1 155 € <span class="sim-trend-badge down">▼ 8.1%</span></div>
+          </div>
+          <div class="sim-trend-item">
+            <div class="sim-trend-label">Solde</div>
+            <div class="sim-trend-val gold">2 045 € <span style="font-size: 11px; color: var(--text-3);">vs 1 943 €</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul>
+    <li><span style="color: var(--green);">▼</span> en vert = vous avez <strong>moins dépensé</strong> que le mois précédent (bonne nouvelle !)</li>
+    <li><span style="color: var(--red);">▲</span> en rouge = vous avez <strong>plus dépensé</strong> que le mois précédent</li>
+  </ul>
+
+  <h3>Filtre par mois</h3>
+  <p>Juste sous la carte Tendances, des boutons permettent de sélectionner un mois spécifique. Quand un mois est sélectionné :</p>
+  <ul>
+    <li>Le tableau de bord n'affiche que les chiffres de ce mois</li>
+    <li>Le graphique ne montre que les dépenses de ce mois</li>
+    <li>L'historique est filtré sur ce mois</li>
+    <li>Les tendances comparent ce mois au précédent</li>
+  </ul>
+  <p>Cliquez sur <strong>"Tous"</strong> pour revenir à la vue globale. Utilisez les flèches ← → pour naviguer de mois en mois.</p>
+
+  <h3>Graphique de répartition</h3>
+  <p>Le graphique en anneau (donut) montre la part de chaque catégorie dans vos dépenses totales. Survolez une portion pour voir le montant exact. En dessous, la légende détaille chaque catégorie avec son pourcentage et son montant.</p>
+
+  <div class="tip gold">
+    <span class="tip-icon">💡</span>
+    <div class="tip-content">
+      <strong>Règle des 50/30/20</strong>
+      Une règle financière populaire suggère de consacrer 50% des revenus aux besoins essentiels (loyer, courses), 30% aux envies (loisirs, restaurant), et 20% à l'épargne. Le graphique vous aide à vérifier où vous en êtes.
+    </div>
+  </div>
+
+  <h3>Vue annuelle</h3>
+  <p>Plus bas dans la page, un graphique en barres montre <strong>les 12 derniers mois</strong> côte à côte, avec les revenus (vert) et les dépenses (rouge) pour chaque mois. Idéal pour repérer les mois où vous avez beaucoup dépensé (vacances, fêtes de fin d'année…) et planifier en conséquence.</p>
+
+  <div class="tip blue">
+    <span class="tip-icon">📅</span>
+    <div class="tip-content">
+      <strong>La vue annuelle ne filtre pas</strong>
+      Elle affiche toujours les 12 derniers mois, indépendamment du filtre mois que vous avez sélectionné. C'est voulu : c'est une vue de référence globale.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- AVANCÉ -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="avance">
+  <h2>Fonctionnalités avancées</h2>
+  <p class="lead">Budget par catégorie, objectifs d'épargne, mode clair… Ces fonctionnalités vous aident à aller plus loin dans la gestion de vos finances.</p>
+
+  <h3>💰 Budget par catégorie</h3>
+  <p>Fixez un plafond mensuel pour chaque catégorie de dépenses. Par exemple : ne pas dépenser plus de 300 € en alimentation ou 100 € en divertissement.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Repérez la section "Budget par catégorie"</h4>
+        <p>Elle se trouve après le graphique annuel, à gauche sur grand écran.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Cliquez sur "+ Définir" à côté d'une catégorie</h4>
+        <p>Un champ de saisie apparaît. Tapez le montant maximum que vous souhaitez dépenser pour cette catégorie ce mois-ci.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Validez avec ✓</h4>
+        <p>Une barre de progression apparaît montrant combien vous avez dépensé par rapport au budget fixé.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mock">
+    <div class="mock-body">
+      <div class="sim-budget">
+        <div class="sim-budget-top">
+          <div class="sim-budget-dot" style="background: #9B7FD4;"></div>
+          <div class="sim-budget-name">Logement</div>
+          <div class="sim-budget-vals">850,00 € / 900,00 €</div>
+        </div>
+        <div class="sim-bar"><div class="sim-bar-fill" style="width: 94%; background: #9B7FD4;"></div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-3); margin-top: 4px;"><span>850 € dépensés</span><span>50 € restants</span></div>
+      </div>
+      <div class="sim-budget">
+        <div class="sim-budget-top">
+          <div class="sim-budget-dot" style="background: #C9A84C;"></div>
+          <div class="sim-budget-name">Alimentation</div>
+          <div class="sim-budget-vals">210,00 € / 150,00 €</div>
+        </div>
+        <div class="sim-bar"><div class="sim-bar-fill" style="width: 100%; background: var(--red);"></div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 4px;"><span style="color: var(--red);">210 € dépensés</span><span style="color: var(--red);">−60 € dépassé</span></div>
+      </div>
+      <div class="sim-budget">
+        <div class="sim-budget-top">
+          <div class="sim-budget-dot" style="background: #5B9BD5;"></div>
+          <div class="sim-budget-name">Transport</div>
+          <div class="sim-budget-vals">85,00 € / 120,00 €</div>
+        </div>
+        <div class="sim-bar"><div class="sim-bar-fill" style="width: 71%; background: #5B9BD5;"></div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-3); margin-top: 4px;"><span>85 € dépensés</span><span>35 € restants</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ul>
+    <li>La barre est <strong style="color: var(--red);">rouge</strong> si vous avez dépassé le budget</li>
+    <li>La barre suit la couleur de la catégorie si vous êtes dans les limites</li>
+    <li>Pour modifier un budget, cliquez sur le montant affiché</li>
+    <li>Le budget s'applique au mois visible (filtré ou tous)</li>
+  </ul>
+
+  <div class="tip green">
+    <span class="tip-icon">🎯</span>
+    <div class="tip-content">
+      <strong>Conseil : commencez par observer</strong>
+      Pendant le premier mois, ne fixez pas de budget. Regardez simplement combien vous dépensez naturellement dans chaque catégorie. Ensuite, fixez des budgets réalistes basés sur vos vraies habitudes.
+    </div>
+  </div>
+
+  <h3>🎯 Objectifs d'épargne</h3>
+  <p>Créez des objectifs concrets : un voyage, l'achat d'un ordinateur, un fonds d'urgence… et suivez votre progression.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Cliquez sur "+ Ajouter"</h4>
+        <p>Dans la section "Objectifs d'épargne" (à droite de la section Budget).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Nommez votre objectif et fixez le montant cible</h4>
+        <p>Exemple : "Vacances Grèce" avec un objectif de 2 000 €. Vous pouvez aussi indiquer combien vous avez déjà épargné.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Mettez à jour votre épargne régulièrement</h4>
+        <p>Cliquez sur <strong>"Mettre à jour l'épargne"</strong> pour modifier le montant épargné. Ou utilisez <strong>"Utiliser le solde"</strong> pour automatiquement affecter votre solde actuel à cet objectif.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mock">
+    <div class="mock-body">
+      <div class="sim-goal">
+        <div class="sim-goal-top">
+          <div class="sim-goal-name">🎯 Vacances Grèce</div>
+          <div class="sim-goal-pct">65%</div>
+        </div>
+        <div class="sim-bar" style="margin-bottom: 6px;"><div class="sim-bar-fill" style="width: 65%; background: var(--gold);"></div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2);">
+          <span>1 300 € / 2 000 €</span><span style="color: var(--text-3);">Reste 700 €</span>
+        </div>
+      </div>
+      <div class="sim-goal" style="border-color: var(--green-border);">
+        <div class="sim-goal-top">
+          <div class="sim-goal-name">✅ Fonds d'urgence</div>
+          <div class="sim-goal-pct" style="color: var(--green);">100%</div>
+        </div>
+        <div class="sim-bar" style="margin-bottom: 6px;"><div class="sim-bar-fill" style="width: 100%; background: var(--green);"></div></div>
+        <div style="font-size: 12px; color: var(--green);">Objectif atteint ! 3 000 € / 3 000 €</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>☀ Mode clair / Mode sombre</h3>
+  <p>Par défaut, l'application utilise un thème sombre (fond noir, texte clair). Si vous préférez un thème clair plus lumineux, cliquez sur le bouton <strong>☀ / ☾</strong> dans le coin supérieur droit de l'en-tête.</p>
+
+  <div class="card" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 200px;">
+      <div style="background: #0B0D13; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; margin-bottom: 8px; text-align: center;">
+        <div style="font-size: 20px;">🌙</div>
+        <div style="font-size: 13px; color: #DDD8CC; margin-top: 6px;">Mode sombre</div>
+        <div style="font-size: 11px; color: #3d4457; margin-top: 2px;">Fond noir, confort visuel en soirée</div>
+      </div>
+    </div>
+    <div style="flex: 1; min-width: 200px;">
+      <div style="background: #F4F3EF; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 14px; margin-bottom: 8px; text-align: center;">
+        <div style="font-size: 20px;">☀️</div>
+        <div style="font-size: 13px; color: #1A1A2E; margin-top: 6px;">Mode clair</div>
+        <div style="font-size: 11px; color: #9AA0B4; margin-top: 2px;">Fond blanc, idéal en plein jour</div>
+      </div>
+    </div>
+  </div>
+
+  <p>Votre préférence est mémorisée : si vous fermez et rouvrez l'application, elle retrouvera le thème que vous avez choisi.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- FAQ -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="faq">
+  <h2>Questions fréquentes</h2>
+  <p class="lead">Les réponses aux questions les plus courantes des utilisateurs.</p>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">💾</span><div><div class="accordion-title">Mes données sont-elles sauvegardées automatiquement ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Oui, <strong>chaque modification est sauvegardée automatiquement</strong> dans votre navigateur (localStorage). Vous pouvez fermer l'onglet, éteindre votre ordinateur, et revenir plus tard : toutes vos données seront là.</p>
+      <p>Aucune action de votre part n'est nécessaire : pas de bouton "Enregistrer", pas de compte à créer.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🔒</span><div><div class="accordion-title">Mes données financières sont-elles en sécurité ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Oui. Vos données <strong>ne quittent jamais votre ordinateur</strong>. Elles sont stockées dans votre navigateur, localement. Aucun serveur ne les reçoit, aucune entreprise n'y a accès.</p>
+      <p>La seule façon pour quelqu'un d'y accéder est d'avoir un accès physique à votre ordinateur et à votre navigateur.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🔄</span><div><div class="accordion-title">Que se passe-t-il si je vide le cache ou change de navigateur ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Vider le cache du navigateur (ou supprimer les données du site) <strong>effacera vos transactions</strong>. Pour éviter de les perdre :</p>
+      <ul>
+        <li>Exportez régulièrement vos données en CSV (bouton "↓ Export")</li>
+        <li>Conservez ce fichier CSV en lieu sûr (dossier Documents, cloud personnel…)</li>
+        <li>En cas de besoin, réimportez-le avec le bouton "↑ Import"</li>
+      </ul>
+      <p>Si vous changez de navigateur ou d'ordinateur, l'export/import CSV est la seule façon de transférer vos données.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">📱</span><div><div class="accordion-title">L'application fonctionne-t-elle sur mobile ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Oui, l'interface s'adapte aux petits écrans. Sur mobile, certains éléments comme les badges de catégorie sont masqués pour gagner de la place, mais toutes les fonctionnalités restent accessibles.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">📅</span><div><div class="accordion-title">Comment annuler une transaction récurrente ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Pour arrêter une transaction récurrente, <strong>modifiez-la</strong> (bouton crayon ✏) et décochez la case "Répéter chaque mois". Les copies déjà générées dans les mois passés restent dans l'historique.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">💱</span><div><div class="accordion-title">Puis-je utiliser une autre devise que l'euro ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>L'application est configurée pour afficher les montants en <strong>euros (€)</strong>. Il n'y a pas d'option pour changer la devise. Vous pouvez toutefois entrer des montants dans n'importe quelle unité et ignorer le symbole €.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🗑️</span><div><div class="accordion-title">Comment supprimer toutes mes données ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Pour effacer toutes vos données, vous pouvez :</p>
+      <ol>
+        <li>Supprimer les données du site dans les paramètres de votre navigateur</li>
+        <li>Ou supprimer manuellement chaque transaction (moins pratique)</li>
+      </ol>
+      <p>Dans Chrome : Paramètres → Confidentialité et sécurité → Cookies et autres données → Voir toutes les données → chercher "localhost" → Supprimer.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">🚀</span><div><div class="accordion-title">Comment lancer l'application sur un autre ordinateur ?</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>L'application est conteneurisée avec Docker. Sur n'importe quel ordinateur où Docker est installé :</p>
+      <ol>
+        <li>Copiez le dossier du projet</li>
+        <li>Ouvrez un terminal dans ce dossier</li>
+        <li>Tapez : <span class="ic">docker compose up --build</span></li>
+        <li>Ouvrez <span class="ic">http://localhost:8080</span> dans le navigateur</li>
+      </ol>
+      <p>N'oubliez pas d'exporter vos données en CSV pour les importer sur le nouvel ordinateur.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 40px;">Conseils pour bien utiliser l'application</h3>
+
+  <div class="tip green">
+    <span class="tip-icon">📆</span>
+    <div class="tip-content">
+      <strong>Saisie hebdomadaire</strong>
+      Prenez 5 minutes chaque dimanche pour saisir toutes les transactions de la semaine. C'est plus simple que de tout faire d'un coup en fin de mois.
+    </div>
+  </div>
+
+  <div class="tip gold">
+    <span class="tip-icon">📸</span>
+    <div class="tip-content">
+      <strong>Photographiez vos reçus</strong>
+      Prenez en photo vos reçus et tickets de caisse pour ne rien oublier. Saisissez la note le soir même.
+    </div>
+  </div>
+
+  <div class="tip blue">
+    <span class="tip-icon">📊</span>
+    <div class="tip-content">
+      <strong>Analysez en fin de mois</strong>
+      En fin de mois, sélectionnez le mois dans le filtre et passez 10 minutes à analyser : où est allé votre argent ? Qu'auriez-vous pu éviter ? Ajustez vos budgets pour le mois suivant.
+    </div>
+  </div>
+
+  <div class="tip purple">
+    <span class="tip-icon">💾</span>
+    <div class="tip-content">
+      <strong>Exportez chaque trimestre</strong>
+      Tous les 3 mois, exportez vos données en CSV et sauvegardez le fichier. C'est votre filet de sécurité si votre navigateur perd les données.
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  Suivi de Budget v1.0.0 · <strong>Fait pour vous aider à mieux gérer votre argent</strong> · Données 100% locales
+</footer>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const map = ['intro','demarrer','transactions','analyse','avance','faq'];
+    document.querySelectorAll('.nav-btn')[map.indexOf(id)].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+</script>
+</body>
+</html>

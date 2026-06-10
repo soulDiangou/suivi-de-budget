@@ -96,7 +96,7 @@ export default function TransactionList({ transactions, allTransactions, onDelet
       <div className="section-list-header">
         <h2 className="section-title" style={{ marginBottom: 0 }}>Historique</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <span className="section-count">{transactions.length} transaction{transactions.length !== 1 ? 's' : ''}</span>
+          <span className="section-count">{displayed.length} transaction{displayed.length !== 1 ? 's' : ''}</span>
           {[
             { key: 'date',     label: 'Date' },
             { key: 'amount',   label: 'Montant' },

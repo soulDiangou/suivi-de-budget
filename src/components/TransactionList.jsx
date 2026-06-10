@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { CATEGORIES, CATEGORY_MAP, formatAmount, formatDate } from '../constants';
+import { formatAmount, formatDate } from '../constants';
 import { exportToCSV, parseCSVImport } from '../utils/csv';
 import TransactionEditModal from './TransactionEditModal';
 
@@ -21,7 +21,7 @@ function PencilIcon() {
   );
 }
 
-export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport, onBackup, onRestore }) {
+export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport, onBackup, onRestore, allCategories = [], allCategoryMap = {} }) {
   const [editingTx, setEditingTx] = useState(null);
   const [importError, setImportError] = useState('');
   const [sortKey, setSortKey] = useState('date');
@@ -90,6 +90,8 @@ export default function TransactionList({ transactions, allTransactions, onDelet
           transaction={editingTx}
           onSave={onEdit}
           onClose={() => setEditingTx(null)}
+          allCategories={allCategories}
+          allCategoryMap={allCategoryMap}
         />
       )}
 
@@ -116,7 +118,7 @@ export default function TransactionList({ transactions, allTransactions, onDelet
             onChange={(e) => setFilterCategory(e.target.value || null)}
             style={
               filterCategory && filterCategory !== 'revenu'
-                ? { color: CATEGORIES.find(c => c.id === filterCategory)?.color }
+                ? { color: allCategoryMap[filterCategory]?.color }
                 : filterCategory === 'revenu'
                 ? { color: 'var(--green)' }
                 : {}
@@ -124,9 +126,18 @@ export default function TransactionList({ transactions, allTransactions, onDelet
           >
             <option value="">Toutes catégories</option>
             <option value="revenu">Revenu</option>
-            {CATEGORIES.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.label}</option>
-            ))}
+            <optgroup label="Catégories">
+              {allCategories.filter(c => !c.isCustom).map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.label}</option>
+              ))}
+            </optgroup>
+            {allCategories.some(c => c.isCustom) && (
+              <optgroup label="Mes catégories">
+                {allCategories.filter(c => c.isCustom).map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                ))}
+              </optgroup>
+            )}
           </select>
           <button className="list-action-btn" onClick={() => exportToCSV(allTransactions)} title="Exporter en CSV">
             ↓ Export
@@ -163,7 +174,7 @@ export default function TransactionList({ transactions, allTransactions, onDelet
         ) : (
           displayed.map((t) => {
             const isIncome = t.type === 'revenu';
-            const cat = !isIncome && t.category ? CATEGORY_MAP[t.category] : null;
+            const cat = !isIncome && t.category ? allCategoryMap[t.category] : null;
 
             return (
               <div key={t.id} className="transaction-item">

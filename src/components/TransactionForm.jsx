@@ -25,7 +25,7 @@ export default function TransactionForm({ onAdd, allCategories = [], customCateg
     const trimmed = newCatName.trim();
     if (!trimmed) return;
     const newCat = addCustomCategory(trimmed);
-    setForm(f => ({ ...f, category: newCat.id }));
+    if (newCat) setForm(f => ({ ...f, category: newCat.id }));
     setShowCreate(false);
     setNewCatName('');
   };
@@ -117,7 +117,10 @@ export default function TransactionForm({ onAdd, allCategories = [], customCateg
                           {cat.label}
                           <button
                             type="button"
-                            onClick={() => deleteCustomCategory(cat.id)}
+                            onClick={() => {
+                              deleteCustomCategory(cat.id);
+                              if (form.category === cat.id) setForm(f => ({ ...f, category: fixedCats[0]?.id ?? '' }));
+                            }}
                             aria-label={`Supprimer ${cat.label}`}
                           >×</button>
                         </span>

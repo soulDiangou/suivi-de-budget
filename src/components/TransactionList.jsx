@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { CATEGORY_MAP, formatAmount, formatDate } from '../constants';
+import { formatAmount, formatDate } from '../constants';
 import { exportToCSV, parseCSVImport } from '../utils/csv';
 import TransactionEditModal from './TransactionEditModal';
 
@@ -21,10 +21,50 @@ function PencilIcon() {
   );
 }
 
-export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport }) {
+export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport, onBackup, onRestore, allCategories = [], allCategoryMap = {} }) {
   const [editingTx, setEditingTx] = useState(null);
   const [importError, setImportError] = useState('');
+  const [sortKey, setSortKey] = useState('date');
+  const [sortDir, setSortDir] = useState('desc');
+  const [filterCategory, setFilterCategory] = useState(null);
   const fileRef = useRef(null);
+  const jsonRef = useRef(null);
+
+  const handleSortClick = (key) => {
+    if (key === sortKey) {
+      setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortKey(key);
+      setSortDir('desc');
+    }
+  };
+
+  const sorted = [...transactions].sort((a, b) => {
+    let cmp = 0;
+    if (sortKey === 'date')     cmp = a.date.localeCompare(b.date);
+    if (sortKey === 'amount')   cmp = a.amount - b.amount;
+    if (sortKey === 'category') cmp = (a.category || 'zzz').localeCompare(b.category || 'zzz');
+    return sortDir === 'desc' ? -cmp : cmp;
+  });
+
+  const displayed = filterCategory
+    ? sorted.filter(t =>
+        filterCategory === 'revenu'
+          ? t.type === 'revenu'
+          : t.category === filterCategory
+      )
+    : sorted;
+
+  const handleRestoreFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      onRestore(ev.target.result);
+    };
+    reader.readAsText(file, 'UTF-8');
+    e.target.value = '';
+  };
 
   const handleImport = (e) => {
     const file = e.target.files[0];
@@ -50,13 +90,55 @@ export default function TransactionList({ transactions, allTransactions, onDelet
           transaction={editingTx}
           onSave={onEdit}
           onClose={() => setEditingTx(null)}
+          allCategories={allCategories}
+          allCategoryMap={allCategoryMap}
         />
       )}
 
       <div className="section-list-header">
         <h2 className="section-title" style={{ marginBottom: 0 }}>Historique</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="section-count">{transactions.length} transaction{transactions.length !== 1 ? 's' : ''}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <span className="section-count">{displayed.length} transaction{displayed.length !== 1 ? 's' : ''}</span>
+          {[
+            { key: 'date',     label: 'Date' },
+            { key: 'amount',   label: 'Montant' },
+            { key: 'category', label: 'Catégorie' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              className={`sort-btn${sortKey === key ? ' active' : ''}`}
+              onClick={() => handleSortClick(key)}
+            >
+              {label}{sortKey === key ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ''}
+            </button>
+          ))}
+          <select
+            className="category-filter-select"
+            value={filterCategory ?? ''}
+            onChange={(e) => setFilterCategory(e.target.value || null)}
+            style={
+              filterCategory && filterCategory !== 'revenu'
+                ? { color: allCategoryMap[filterCategory]?.color }
+                : filterCategory === 'revenu'
+                ? { color: 'var(--green)' }
+                : {}
+            }
+          >
+            <option value="">Toutes catégories</option>
+            <option value="revenu">Revenu</option>
+            <optgroup label="Catégories">
+              {allCategories.filter(c => !c.isCustom).map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.label}</option>
+              ))}
+            </optgroup>
+            {allCategories.some(c => c.isCustom) && (
+              <optgroup label="Mes catégories">
+                {allCategories.filter(c => c.isCustom).map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                ))}
+              </optgroup>
+            )}
+          </select>
           <button className="list-action-btn" onClick={() => exportToCSV(allTransactions)} title="Exporter en CSV">
             ↓ Export
           </button>
@@ -64,22 +146,35 @@ export default function TransactionList({ transactions, allTransactions, onDelet
             ↑ Import
           </button>
           <input ref={fileRef} type="file" accept=".csv,text/csv" onChange={handleImport} style={{ display: 'none' }} />
+          <button className="list-action-btn" onClick={onBackup} title="Sauvegarder toutes les données (JSON)">
+            ↓ Backup
+          </button>
+          <button className="list-action-btn" onClick={() => jsonRef.current?.click()} title="Restaurer depuis un backup JSON">
+            ↑ Restore
+          </button>
+          <input
+            ref={jsonRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={handleRestoreFile}
+            style={{ display: 'none' }}
+          />
         </div>
       </div>
 
       {importError && <p className="form-error" style={{ marginBottom: '0.5rem' }}>{importError}</p>}
 
       <div className="list-card">
-        {transactions.length === 0 ? (
+        {displayed.length === 0 ? (
           <div className="list-empty">
             <div className="list-empty-icon">◈</div>
             <p>Aucune transaction pour le moment.</p>
             <p style={{ opacity: 0.6, fontSize: '0.75rem' }}>Ajoutez votre premier revenu ou dépense ci-dessus.</p>
           </div>
         ) : (
-          transactions.map((t) => {
+          displayed.map((t) => {
             const isIncome = t.type === 'revenu';
-            const cat = !isIncome && t.category ? CATEGORY_MAP[t.category] : null;
+            const cat = !isIncome && t.category ? allCategoryMap[t.category] : null;
 
             return (
               <div key={t.id} className="transaction-item">

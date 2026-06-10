@@ -20,11 +20,12 @@ function computeTotals(list) {
   );
 }
 
-function computeExpensesByCategory(list) {
+function computeExpensesByCategory(list, customCategories = []) {
+  const allCats = [...CATEGORIES, ...customCategories];
   const map = list
     .filter(t => t.type === 'depense')
     .reduce((acc, t) => { acc[t.category] = (acc[t.category] || 0) + t.amount; return acc; }, {});
-  return CATEGORIES
+  return allCats
     .filter(cat => map[cat.id])
     .map(cat => ({ name: cat.label, value: map[cat.id], color: cat.color }));
 }
@@ -62,7 +63,7 @@ function autoGenerateRecurring(saved) {
   return newTxs;
 }
 
-export function useTransactions() {
+export function useTransactions(customCategories = []) {
   const [transactions, setTransactions] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -128,7 +129,10 @@ export function useTransactions() {
 
   const { income, expense } = useMemo(() => computeTotals(visibleTransactions), [visibleTransactions]);
 
-  const expensesByCategory = useMemo(() => computeExpensesByCategory(visibleTransactions), [visibleTransactions]);
+  const expensesByCategory = useMemo(
+    () => computeExpensesByCategory(visibleTransactions, customCategories),
+    [visibleTransactions, customCategories]
+  );
 
   const trends = useMemo(() => {
     const target = filterMonth || todayMonth();

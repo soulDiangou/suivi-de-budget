@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { useTransactions } from './hooks/useTransactions';
 import { useTheme } from './hooks/useTheme';
 import { useBudgets } from './hooks/useBudgets';
 import { useGoals } from './hooks/useGoals';
+import { useCustomCategories } from './hooks/useCustomCategories';
 import Dashboard from './components/Dashboard';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
@@ -11,7 +13,8 @@ import TrendCard from './components/TrendCard';
 import BudgetManager from './components/BudgetManager';
 import SavingsGoals from './components/SavingsGoals';
 import SearchBar from './components/SearchBar';
-import { formatAmount } from './constants';
+import { formatAmount, CATEGORIES } from './constants';
+import { exportBackup, importBackup } from './utils/backup';
 
 function monthLabel(ym) {
   const [year, month] = ym.split('-');
@@ -52,6 +55,11 @@ function ThemeToggle({ theme, toggle }) {
 }
 
 export default function App() {
+  const { customCategories, addCustomCategory, deleteCustomCategory } = useCustomCategories();
+
+  const allCategories = useMemo(() => [...CATEGORIES, ...customCategories], [customCategories]);
+  const allCategoryMap = useMemo(() => Object.fromEntries(allCategories.map(c => [c.id, c])), [allCategories]);
+
   const {
     transactions, allTransactions,
     addTransaction, deleteTransaction, editTransaction, importTransactions,
@@ -60,11 +68,24 @@ export default function App() {
     filterMonth, setFilterMonth, availableMonths,
     searchQuery, setSearchQuery,
     trends,
-  } = useTransactions();
+  } = useTransactions(customCategories);
 
   const { theme, toggleTheme } = useTheme();
   const { budgets, setBudget, clearBudget } = useBudgets();
   const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
+
+  const handleBackup = () => {
+    exportBackup({ transactions: allTransactions, budgets, goals });
+  };
+
+  const handleRestore = (jsonText) => {
+    const result = importBackup(jsonText);
+    if (result.ok) {
+      window.location.reload();
+    } else {
+      alert(result.error);
+    }
+  };
 
   const totalBalance = allTransactions.reduce((acc, t) => {
     return acc + (t.type === 'revenu' ? t.amount : -t.amount);
@@ -73,6 +94,22 @@ export default function App() {
   const dateLabel = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
+
+  const overBudgetCount = useMemo(() => {
+    const spentMap = Object.fromEntries(
+      expensesByCategory
+        .map(e => {
+          const cat = allCategories.find(c => c.label === e.name);
+          return [cat?.id, e.value];
+        })
+        .filter(([id]) => id !== undefined)
+    );
+    return allCategories.filter(cat => {
+      const budget = budgets[cat.id] || 0;
+      const spent = spentMap[cat.id] ?? 0;
+      return budget > 0 && spent > budget;
+    }).length;
+  }, [expensesByCategory, budgets, allCategories]);
 
   return (
     <div className="app">
@@ -90,6 +127,11 @@ export default function App() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
           <ThemeToggle theme={theme} toggle={toggleTheme} />
+          {overBudgetCount > 0 && (
+            <span className="budget-alert-badge">
+              ⚠ {overBudgetCount} {overBudgetCount === 1 ? 'dépassé' : 'dépassés'}
+            </span>
+          )}
           <div className={`header-balance ${balance >= 0 ? 'positive' : 'negative'}`}>
             <span className="header-balance-label">
               {filterMonth ? monthLabel(filterMonth) : 'Solde disponible'}
@@ -109,7 +151,13 @@ export default function App() {
         <div className="content-grid">
           <section>
             <h2 className="section-title">Nouvelle transaction</h2>
-            <TransactionForm onAdd={addTransaction} />
+            <TransactionForm
+              onAdd={addTransaction}
+              allCategories={allCategories}
+              customCategories={customCategories}
+              addCustomCategory={addCustomCategory}
+              deleteCustomCategory={deleteCustomCategory}
+            />
           </section>
           <section>
             <h2 className="section-title">Répartition des dépenses</h2>
@@ -126,6 +174,7 @@ export default function App() {
               setBudget={setBudget}
               clearBudget={clearBudget}
               expensesByCategory={expensesByCategory}
+              allCategories={allCategories}
             />
           </section>
           <section>
@@ -147,6 +196,10 @@ export default function App() {
             onDelete={deleteTransaction}
             onEdit={editTransaction}
             onImport={importTransactions}
+            onBackup={handleBackup}
+            onRestore={handleRestore}
+            allCategories={allCategories}
+            allCategoryMap={allCategoryMap}
           />
         </section>
       </main>

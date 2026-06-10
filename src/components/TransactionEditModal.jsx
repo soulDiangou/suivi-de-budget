@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { CATEGORIES, CATEGORY_MAP } from '../constants';
 
-export default function TransactionEditModal({ transaction, onSave, onClose }) {
+export default function TransactionEditModal({ transaction, onSave, onClose, allCategories = [], allCategoryMap = {} }) {
   const [type, setType]   = useState(transaction.type);
   const [form, setForm]   = useState({
     description: transaction.description,
     amount:      transaction.amount,
     date:        transaction.date,
-    category:    transaction.category || 'transport',
+    category:    (allCategories.find(c => c.id === transaction.category) ? transaction.category : null) || 'transport',
     note:        transaction.note || '',
     isRecurring: transaction.isRecurring || false,
   });
@@ -34,7 +33,9 @@ export default function TransactionEditModal({ transaction, onSave, onClose }) {
     onClose();
   };
 
-  const selectedCat = type === 'depense' ? CATEGORY_MAP[form.category] : null;
+  const selectedCat = type === 'depense' ? allCategoryMap[form.category] : null;
+  const fixedCats = allCategories.filter(c => !c.isCustom);
+  const customCats = allCategories.filter(c => c.isCustom);
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -79,7 +80,14 @@ export default function TransactionEditModal({ transaction, onSave, onClose }) {
               <div className="select-wrapper">
                 {selectedCat && <span className="select-dot" style={{ background: selectedCat.color }} />}
                 <select value={form.category} onChange={set('category')} style={{ paddingLeft: selectedCat ? '2.2rem' : '0.9rem' }}>
-                  {CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
+                  <optgroup label="Catégories">
+                    {fixedCats.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
+                  </optgroup>
+                  {customCats.length > 0 && (
+                    <optgroup label="Mes catégories">
+                      {customCats.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
+                    </optgroup>
+                  )}
                 </select>
               </div>
             </div>

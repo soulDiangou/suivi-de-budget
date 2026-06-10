@@ -6,7 +6,7 @@ export default function TransactionEditModal({ transaction, onSave, onClose, all
     description: transaction.description,
     amount:      transaction.amount,
     date:        transaction.date,
-    category:    transaction.category || 'transport',
+    category:    (allCategories.find(c => c.id === transaction.category) ? transaction.category : null) || 'transport',
     note:        transaction.note || '',
     isRecurring: transaction.isRecurring || false,
   });

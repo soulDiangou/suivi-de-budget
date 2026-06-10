@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { CATEGORY_MAP, formatAmount, formatDate } from '../constants';
+import { CATEGORIES, CATEGORY_MAP, formatAmount, formatDate } from '../constants';
 import { exportToCSV, parseCSVImport } from '../utils/csv';
 import TransactionEditModal from './TransactionEditModal';
 
@@ -26,6 +26,7 @@ export default function TransactionList({ transactions, allTransactions, onDelet
   const [importError, setImportError] = useState('');
   const [sortKey, setSortKey] = useState('date');
   const [sortDir, setSortDir] = useState('desc');
+  const [filterCategory, setFilterCategory] = useState(null);
   const fileRef = useRef(null);
 
   const handleSortClick = (key) => {
@@ -44,6 +45,14 @@ export default function TransactionList({ transactions, allTransactions, onDelet
     if (sortKey === 'category') cmp = (a.category || 'zzz').localeCompare(b.category || 'zzz');
     return sortDir === 'desc' ? -cmp : cmp;
   });
+
+  const displayed = filterCategory
+    ? sorted.filter(t =>
+        filterCategory === 'revenu'
+          ? t.type === 'revenu'
+          : t.category === filterCategory
+      )
+    : sorted;
 
   const handleImport = (e) => {
     const file = e.target.files[0];
@@ -89,6 +98,24 @@ export default function TransactionList({ transactions, allTransactions, onDelet
               {label}{sortKey === key ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ''}
             </button>
           ))}
+          <select
+            className="category-filter-select"
+            value={filterCategory ?? ''}
+            onChange={(e) => setFilterCategory(e.target.value || null)}
+            style={
+              filterCategory && filterCategory !== 'revenu'
+                ? { color: CATEGORIES.find(c => c.id === filterCategory)?.color }
+                : filterCategory === 'revenu'
+                ? { color: 'var(--green)' }
+                : {}
+            }
+          >
+            <option value="">Toutes catégories</option>
+            <option value="revenu">Revenu</option>
+            {CATEGORIES.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.label}</option>
+            ))}
+          </select>
           <button className="list-action-btn" onClick={() => exportToCSV(allTransactions)} title="Exporter en CSV">
             ↓ Export
           </button>
@@ -102,14 +129,14 @@ export default function TransactionList({ transactions, allTransactions, onDelet
       {importError && <p className="form-error" style={{ marginBottom: '0.5rem' }}>{importError}</p>}
 
       <div className="list-card">
-        {sorted.length === 0 ? (
+        {displayed.length === 0 ? (
           <div className="list-empty">
             <div className="list-empty-icon">◈</div>
             <p>Aucune transaction pour le moment.</p>
             <p style={{ opacity: 0.6, fontSize: '0.75rem' }}>Ajoutez votre premier revenu ou dépense ci-dessus.</p>
           </div>
         ) : (
-          sorted.map((t) => {
+          displayed.map((t) => {
             const isIncome = t.type === 'revenu';
             const cat = !isIncome && t.category ? CATEGORY_MAP[t.category] : null;
 

@@ -3,6 +3,7 @@ import { useTransactions } from './hooks/useTransactions';
 import { useTheme } from './hooks/useTheme';
 import { useBudgets } from './hooks/useBudgets';
 import { useGoals } from './hooks/useGoals';
+import { useCustomCategories } from './hooks/useCustomCategories';
 import Dashboard from './components/Dashboard';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
@@ -54,6 +55,11 @@ function ThemeToggle({ theme, toggle }) {
 }
 
 export default function App() {
+  const { customCategories, addCustomCategory, deleteCustomCategory } = useCustomCategories();
+
+  const allCategories = useMemo(() => [...CATEGORIES, ...customCategories], [customCategories]);
+  const allCategoryMap = useMemo(() => Object.fromEntries(allCategories.map(c => [c.id, c])), [allCategories]);
+
   const {
     transactions, allTransactions,
     addTransaction, deleteTransaction, editTransaction, importTransactions,
@@ -62,7 +68,7 @@ export default function App() {
     filterMonth, setFilterMonth, availableMonths,
     searchQuery, setSearchQuery,
     trends,
-  } = useTransactions();
+  } = useTransactions(customCategories);
 
   const { theme, toggleTheme } = useTheme();
   const { budgets, setBudget, clearBudget } = useBudgets();
@@ -92,15 +98,18 @@ export default function App() {
   const overBudgetCount = useMemo(() => {
     const spentMap = Object.fromEntries(
       expensesByCategory
-        .map(e => [CATEGORIES.find(c => c.label === e.name)?.id, e.value])
+        .map(e => {
+          const cat = allCategories.find(c => c.label === e.name);
+          return [cat?.id, e.value];
+        })
         .filter(([id]) => id !== undefined)
     );
-    return CATEGORIES.filter(cat => {
+    return allCategories.filter(cat => {
       const budget = budgets[cat.id] || 0;
       const spent = spentMap[cat.id] ?? 0;
       return budget > 0 && spent > budget;
     }).length;
-  }, [expensesByCategory, budgets]);
+  }, [expensesByCategory, budgets, allCategories]);
 
   return (
     <div className="app">
@@ -142,7 +151,13 @@ export default function App() {
         <div className="content-grid">
           <section>
             <h2 className="section-title">Nouvelle transaction</h2>
-            <TransactionForm onAdd={addTransaction} />
+            <TransactionForm
+              onAdd={addTransaction}
+              allCategories={allCategories}
+              customCategories={customCategories}
+              addCustomCategory={addCustomCategory}
+              deleteCustomCategory={deleteCustomCategory}
+            />
           </section>
           <section>
             <h2 className="section-title">Répartition des dépenses</h2>
@@ -159,6 +174,7 @@ export default function App() {
               setBudget={setBudget}
               clearBudget={clearBudget}
               expensesByCategory={expensesByCategory}
+              allCategories={allCategories}
             />
           </section>
           <section>
@@ -182,6 +198,8 @@ export default function App() {
             onImport={importTransactions}
             onBackup={handleBackup}
             onRestore={handleRestore}
+            allCategories={allCategories}
+            allCategoryMap={allCategoryMap}
           />
         </section>
       </main>

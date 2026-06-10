@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTransactions } from './hooks/useTransactions';
 import { useTheme } from './hooks/useTheme';
 import { useBudgets } from './hooks/useBudgets';
@@ -74,15 +75,18 @@ export default function App() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  const spentMap = Object.fromEntries(
-    expensesByCategory.map(e => {
-      const cat = CATEGORIES.find(c => c.label === e.name);
-      return [cat?.id, e.value];
-    })
-  );
-  const overBudgetCount = CATEGORIES.filter(
-    cat => budgets[cat.id] > 0 && (spentMap[cat.id] ?? 0) > budgets[cat.id]
-  ).length;
+  const overBudgetCount = useMemo(() => {
+    const spentMap = Object.fromEntries(
+      expensesByCategory
+        .map(e => [CATEGORIES.find(c => c.label === e.name)?.id, e.value])
+        .filter(([id]) => id !== undefined)
+    );
+    return CATEGORIES.filter(cat => {
+      const budget = budgets[cat.id] || 0;
+      const spent = spentMap[cat.id] ?? 0;
+      return budget > 0 && spent > budget;
+    }).length;
+  }, [expensesByCategory, budgets]);
 
   return (
     <div className="app">

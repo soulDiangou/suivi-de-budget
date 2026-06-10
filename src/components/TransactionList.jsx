@@ -24,7 +24,26 @@ function PencilIcon() {
 export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport }) {
   const [editingTx, setEditingTx] = useState(null);
   const [importError, setImportError] = useState('');
+  const [sortKey, setSortKey] = useState('date');
+  const [sortDir, setSortDir] = useState('desc');
   const fileRef = useRef(null);
+
+  const handleSortClick = (key) => {
+    if (key === sortKey) {
+      setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortKey(key);
+      setSortDir('desc');
+    }
+  };
+
+  const sorted = [...transactions].sort((a, b) => {
+    let cmp = 0;
+    if (sortKey === 'date')     cmp = a.date.localeCompare(b.date);
+    if (sortKey === 'amount')   cmp = a.amount - b.amount;
+    if (sortKey === 'category') cmp = (a.category || 'zzz').localeCompare(b.category || 'zzz');
+    return sortDir === 'desc' ? -cmp : cmp;
+  });
 
   const handleImport = (e) => {
     const file = e.target.files[0];
@@ -55,8 +74,21 @@ export default function TransactionList({ transactions, allTransactions, onDelet
 
       <div className="section-list-header">
         <h2 className="section-title" style={{ marginBottom: 0 }}>Historique</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <span className="section-count">{transactions.length} transaction{transactions.length !== 1 ? 's' : ''}</span>
+          {[
+            { key: 'date',     label: 'Date' },
+            { key: 'amount',   label: 'Montant' },
+            { key: 'category', label: 'Catégorie' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              className={`sort-btn${sortKey === key ? ' active' : ''}`}
+              onClick={() => handleSortClick(key)}
+            >
+              {label}{sortKey === key ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ''}
+            </button>
+          ))}
           <button className="list-action-btn" onClick={() => exportToCSV(allTransactions)} title="Exporter en CSV">
             ↓ Export
           </button>
@@ -70,14 +102,14 @@ export default function TransactionList({ transactions, allTransactions, onDelet
       {importError && <p className="form-error" style={{ marginBottom: '0.5rem' }}>{importError}</p>}
 
       <div className="list-card">
-        {transactions.length === 0 ? (
+        {sorted.length === 0 ? (
           <div className="list-empty">
             <div className="list-empty-icon">◈</div>
             <p>Aucune transaction pour le moment.</p>
             <p style={{ opacity: 0.6, fontSize: '0.75rem' }}>Ajoutez votre premier revenu ou dépense ci-dessus.</p>
           </div>
         ) : (
-          transactions.map((t) => {
+          sorted.map((t) => {
             const isIncome = t.type === 'revenu';
             const cat = !isIncome && t.category ? CATEGORY_MAP[t.category] : null;
 

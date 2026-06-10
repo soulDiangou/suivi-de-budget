@@ -902,6 +902,31 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cur
   background: var(--gold-dim);
 }
 
+.sort-btn {
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all var(--transition);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sort-btn:hover {
+  border-color: var(--border-md);
+  color: var(--text-1);
+}
+
+.sort-btn.active {
+  border-color: var(--border-gold);
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+
 /* ============================================
    TRANSACTION LIST
    ============================================ */

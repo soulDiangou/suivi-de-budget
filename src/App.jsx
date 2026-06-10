@@ -11,7 +11,7 @@ import TrendCard from './components/TrendCard';
 import BudgetManager from './components/BudgetManager';
 import SavingsGoals from './components/SavingsGoals';
 import SearchBar from './components/SearchBar';
-import { formatAmount } from './constants';
+import { formatAmount, CATEGORIES } from './constants';
 
 function monthLabel(ym) {
   const [year, month] = ym.split('-');
@@ -74,6 +74,16 @@ export default function App() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
+  const spentMap = Object.fromEntries(
+    expensesByCategory.map(e => {
+      const cat = CATEGORIES.find(c => c.label === e.name);
+      return [cat?.id, e.value];
+    })
+  );
+  const overBudgetCount = CATEGORIES.filter(
+    cat => budgets[cat.id] > 0 && (spentMap[cat.id] ?? 0) > budgets[cat.id]
+  ).length;
+
   return (
     <div className="app">
       <header className="header">
@@ -90,6 +100,11 @@ export default function App() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
           <ThemeToggle theme={theme} toggle={toggleTheme} />
+          {overBudgetCount > 0 && (
+            <span className="budget-alert-badge">
+              ⚠ {overBudgetCount} {overBudgetCount === 1 ? 'dépassé' : 'dépassés'}
+            </span>
+          )}
           <div className={`header-balance ${balance >= 0 ? 'positive' : 'negative'}`}>
             <span className="header-balance-label">
               {filterMonth ? monthLabel(filterMonth) : 'Solde disponible'}

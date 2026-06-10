@@ -209,6 +209,23 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cur
   background: var(--gold-dim);
 }
 
+/* Budget alert badge */
+.budget-alert-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-xs);
+  background: var(--red-dim);
+  border: 1px solid var(--red-border);
+  color: var(--red);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ============================================
    DASHBOARD STAT CARDS
    ============================================ */

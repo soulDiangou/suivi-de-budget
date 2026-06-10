@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { CATEGORIES } from '../constants';
 import { formatAmount } from '../constants';
 
-export default function BudgetManager({ budgets, setBudget, clearBudget, expensesByCategory }) {
+export default function BudgetManager({ budgets, setBudget, clearBudget, expensesByCategory, allCategories = [] }) {
   const [editing, setEditing] = useState(null);
   const [draft, setDraft]     = useState('');
 
   const spentMap = Object.fromEntries(
     expensesByCategory.map(e => {
-      const cat = CATEGORIES.find(c => c.label === e.name);
+      const cat = allCategories.find(c => c.label === e.name);
       return [cat?.id, e.value];
-    })
+    }).filter(([id]) => id !== undefined)
   );
 
   const startEdit = (catId, current) => {
@@ -29,7 +28,7 @@ export default function BudgetManager({ budgets, setBudget, clearBudget, expense
     <div className="chart-card">
       <h2 className="section-title" style={{ marginBottom: '1.2rem' }}>Budget par catégorie</h2>
       <div className="budget-list">
-        {CATEGORIES.map(cat => {
+        {allCategories.map(cat => {
           const budget = budgets[cat.id] || 0;
           const spent  = spentMap[cat.id] || 0;
           const pct    = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;

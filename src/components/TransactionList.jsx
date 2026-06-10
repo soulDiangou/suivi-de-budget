@@ -21,13 +21,14 @@ function PencilIcon() {
   );
 }
 
-export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport }) {
+export default function TransactionList({ transactions, allTransactions, onDelete, onEdit, onImport, onBackup, onRestore }) {
   const [editingTx, setEditingTx] = useState(null);
   const [importError, setImportError] = useState('');
   const [sortKey, setSortKey] = useState('date');
   const [sortDir, setSortDir] = useState('desc');
   const [filterCategory, setFilterCategory] = useState(null);
   const fileRef = useRef(null);
+  const jsonRef = useRef(null);
 
   const handleSortClick = (key) => {
     if (key === sortKey) {
@@ -53,6 +54,17 @@ export default function TransactionList({ transactions, allTransactions, onDelet
           : t.category === filterCategory
       )
     : sorted;
+
+  const handleRestoreFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      onRestore(ev.target.result);
+    };
+    reader.readAsText(file, 'UTF-8');
+    e.target.value = '';
+  };
 
   const handleImport = (e) => {
     const file = e.target.files[0];
@@ -123,6 +135,19 @@ export default function TransactionList({ transactions, allTransactions, onDelet
             ↑ Import
           </button>
           <input ref={fileRef} type="file" accept=".csv,text/csv" onChange={handleImport} style={{ display: 'none' }} />
+          <button className="list-action-btn" onClick={onBackup} title="Sauvegarder toutes les données (JSON)">
+            ↓ Backup
+          </button>
+          <button className="list-action-btn" onClick={() => jsonRef.current?.click()} title="Restaurer depuis un backup JSON">
+            ↑ Restore
+          </button>
+          <input
+            ref={jsonRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={handleRestoreFile}
+            style={{ display: 'none' }}
+          />
         </div>
       </div>
 

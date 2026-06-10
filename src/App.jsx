@@ -13,6 +13,7 @@ import BudgetManager from './components/BudgetManager';
 import SavingsGoals from './components/SavingsGoals';
 import SearchBar from './components/SearchBar';
 import { formatAmount, CATEGORIES } from './constants';
+import { exportBackup, importBackup } from './utils/backup';
 
 function monthLabel(ym) {
   const [year, month] = ym.split('-');
@@ -66,6 +67,19 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   const { budgets, setBudget, clearBudget } = useBudgets();
   const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
+
+  const handleBackup = () => {
+    exportBackup({ transactions: allTransactions, budgets, goals });
+  };
+
+  const handleRestore = (jsonText) => {
+    const result = importBackup(jsonText);
+    if (result.ok) {
+      window.location.reload();
+    } else {
+      alert(result.error);
+    }
+  };
 
   const totalBalance = allTransactions.reduce((acc, t) => {
     return acc + (t.type === 'revenu' ? t.amount : -t.amount);
@@ -166,6 +180,8 @@ export default function App() {
             onDelete={deleteTransaction}
             onEdit={editTransaction}
             onImport={importTransactions}
+            onBackup={handleBackup}
+            onRestore={handleRestore}
           />
         </section>
       </main>

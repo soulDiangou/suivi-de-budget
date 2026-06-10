@@ -325,6 +325,219 @@
       color: var(--green);
     }
 
+    /* ── HTTP Animation ── */
+    .http-anim {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      background: #0d0f18;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      margin: 20px 0;
+      min-height: 160px;
+    }
+
+    .http-side {
+      width: 120px;
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px 10px;
+      text-align: center;
+      transition: border-color 0.4s, box-shadow 0.4s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .http-side.cs-active-client {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(201,168,76,0.18);
+    }
+
+    .http-side.cs-active-server {
+      border-color: var(--green);
+      box-shadow: 0 0 20px rgba(76,175,125,0.18);
+    }
+
+    .http-side.cs-waiting {
+      border-color: var(--blue);
+      box-shadow: 0 0 10px rgba(91,155,213,0.12);
+    }
+
+    .http-side-icon  { font-size: 28px; }
+    .http-side-name  { font-size: 12px; font-weight: 600; color: var(--text-1); margin-top: 8px; }
+    .http-side-role  { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+    .http-side-state { font-size: 11px; margin-top: 8px; min-height: 16px; color: var(--text-3); transition: color 0.3s; }
+
+    .http-middle {
+      flex: 1;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .http-lane {
+      position: relative;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    .http-track {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .http-label {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+
+    .http-pill {
+      position: absolute;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      left: 0;
+    }
+
+    .http-pill--req {
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+    }
+
+    .http-pill--res {
+      background: rgba(76,175,125,0.12);
+      border: 1px solid rgba(76,175,125,0.35);
+      color: var(--green);
+      right: 0;
+      left: auto;
+    }
+
+    @keyframes httpReqTravel {
+      0%   { left: 0;    opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { left: calc(100% - 20px); opacity: 0; }
+    }
+
+    @keyframes httpResTravel {
+      0%   { right: 0;   opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { right: calc(100% - 20px); opacity: 0; }
+    }
+
+    .http-pill.anim-req { animation: httpReqTravel 1.1s ease-in-out forwards; }
+    .http-pill.anim-res { animation: httpResTravel 1.1s ease-in-out forwards; }
+
+    .http-pill--res.anim-res {
+      left: auto;
+      animation: httpResTravel 1.1s ease-in-out forwards;
+    }
+
+    .http-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .http-method {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .http-method-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 3px 7px;
+      border-radius: 5px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .http-method-badge.get    { background: rgba(76,175,125,0.15);  color: var(--green); border: 1px solid rgba(76,175,125,0.3); }
+    .http-method-badge.post   { background: rgba(91,155,213,0.15);  color: var(--blue);  border: 1px solid rgba(91,155,213,0.3); }
+    .http-method-badge.put    { background: rgba(201,168,76,0.15);  color: var(--gold);  border: 1px solid rgba(201,168,76,0.3); }
+    .http-method-badge.delete { background: rgba(224,92,92,0.15);   color: var(--red);   border: 1px solid rgba(224,92,92,0.3); }
+
+    .http-method-body h5  { font-size: 13px; font-weight: 600; color: var(--text-1); margin-bottom: 3px; }
+    .http-method-body p   { font-size: 12px; color: var(--text-2); margin: 0; }
+
+    .http-status-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+
+    .http-status {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .http-status.s2 { background: rgba(76,175,125,0.12); color: var(--green); border: 1px solid rgba(76,175,125,0.3); }
+    .http-status.s3 { background: rgba(91,155,213,0.12); color: var(--blue);  border: 1px solid rgba(91,155,213,0.3); }
+    .http-status.s4 { background: rgba(201,168,76,0.12); color: var(--gold);  border: 1px solid rgba(201,168,76,0.3); }
+    .http-status.s5 { background: rgba(224,92,92,0.12);  color: var(--red);   border: 1px solid rgba(224,92,92,0.3); }
+
+    .cs-contrast {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .cs-contrast-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .cs-contrast-card.highlight { border-color: var(--gold-border); background: var(--gold-dim); }
+    .cs-contrast-card h5 { font-size: 13px; font-weight: 600; color: var(--text-1); margin-bottom: 6px; }
+    .cs-contrast-card p  { font-size: 12px; color: var(--text-2); margin: 0; }
+
+    @media (max-width: 600px) {
+      .http-anim { flex-direction: column; gap: 12px; }
+      .http-middle { padding: 0; }
+      .cs-contrast { grid-template-columns: 1fr; }
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav { gap: 4px; padding: 8px; }
@@ -344,10 +557,11 @@
 
 <nav class="nav" id="nav">
   <button class="nav-btn active" onclick="showSection('bases')">1. Les bases du web</button>
-  <button class="nav-btn" onclick="showSection('outils')">2. Les outils</button>
-  <button class="nav-btn" onclick="showSection('construction')">3. Construire l'app</button>
-  <button class="nav-btn" onclick="showSection('docker')">4. Conteneurisation</button>
-  <button class="nav-btn" onclick="showSection('recapitulatif')">5. Récapitulatif</button>
+  <button class="nav-btn" onclick="showSection('clientserveur')">2. Client-Serveur & HTTP</button>
+  <button class="nav-btn" onclick="showSection('outils')">3. Les outils</button>
+  <button class="nav-btn" onclick="showSection('construction')">4. Construire l'app</button>
+  <button class="nav-btn" onclick="showSection('docker')">5. Conteneurisation</button>
+  <button class="nav-btn" onclick="showSection('recapitulatif')">6. Récapitulatif</button>
 </nav>
 
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -451,7 +665,185 @@ localStorage.<span class="fn">removeItem</span>(<span class="st">'ma_cle'</span>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<!-- SECTION 2 — LES OUTILS -->
+<!-- SECTION 2 — CLIENT-SERVEUR & HTTP -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="clientserveur">
+  <h2>Client, Serveur &amp; HTTP</h2>
+  <p class="lead">Comprendre comment le navigateur et un serveur communiquent est la base de tout développement web. Ce modèle gouverne chaque page que tu ouvres.</p>
+
+  <h3 class="gold">Le modèle client-serveur</h3>
+  <p>Toute communication sur internet repose sur deux rôles :</p>
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <h4>Le Client</h4>
+      <p>Ton navigateur (Chrome, Firefox, Safari…). Il <em>demande</em> des ressources en envoyant des requêtes. C'est lui qui fait le premier pas.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🖥️</span>
+      <h4>Le Serveur</h4>
+      <p>Un ordinateur accessible en ligne (ou en réseau local) qui <em>attend</em> et <em>répond</em> aux demandes. Il stocke les fichiers, les bases de données, la logique métier.</p>
+    </div>
+  </div>
+
+  <h3 class="gold">Diagramme interactif — requête / réponse</h3>
+  <p>Voici ce qui se passe à chaque fois que tu ouvres une page web :</p>
+
+  <div class="http-anim" id="httpAnim">
+    <div class="http-side" id="httpClient">
+      <div class="http-side-icon">🌐</div>
+      <div class="http-side-name">Chrome / Firefox</div>
+      <div class="http-side-role">Client</div>
+      <div class="http-side-state" id="httpClientState">Inactif</div>
+    </div>
+
+    <div class="http-middle">
+      <div class="http-lane" id="httpReqLane">
+        <div class="http-track"></div>
+        <div class="http-label">Requête HTTP →</div>
+        <div class="http-pill http-pill--req" id="httpReqPill">GET /index.html</div>
+      </div>
+      <div class="http-lane" id="httpResLane">
+        <div class="http-track"></div>
+        <div class="http-label">← Réponse HTTP</div>
+        <div class="http-pill http-pill--res" id="httpResPill">200 OK + HTML</div>
+      </div>
+    </div>
+
+    <div class="http-side" id="httpServer">
+      <div class="http-side-icon">🖥️</div>
+      <div class="http-side-name">nginx / Node.js</div>
+      <div class="http-side-role">Serveur</div>
+      <div class="http-side-state" id="httpServerState">En attente…</div>
+    </div>
+  </div>
+
+  <div class="steps" style="margin-top: 24px;">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Le client envoie une requête</h4>
+        <p>Quand tu tapes une URL ou cliques un lien, le navigateur construit un message HTTP et l'envoie au serveur. Ce message précise : quelle ressource ? quelle méthode (lire, créer…) ? quels paramètres ?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Le serveur traite la demande</h4>
+        <p>Il reçoit la requête, cherche la ressource (fichier HTML, données en base…), exécute la logique si besoin, et prépare une réponse.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Le serveur envoie la réponse</h4>
+        <p>La réponse HTTP contient un <strong>code de statut</strong> (200 = OK, 404 = introuvable…) et un <strong>corps</strong> (le HTML, le JSON, l'image…).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Le navigateur affiche le résultat</h4>
+        <p>Il interprète le HTML, applique le CSS, exécute le JavaScript, et affiche la page. Si la page demande d'autres ressources (images, scripts), de nouvelles requêtes partent.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="gold">HTTP — le protocole de communication</h3>
+  <p>HTTP (HyperText Transfer Protocol) est le langage que le client et le serveur utilisent pour se parler. Chaque requête précise une <strong>méthode</strong> qui indique l'intention :</p>
+
+  <div class="http-methods">
+    <div class="http-method">
+      <div class="http-method-badge get">GET</div>
+      <div class="http-method-body">
+        <h5>Lire une ressource</h5>
+        <p>Récupérer une page, une image, des données JSON. Ne modifie rien.</p>
+      </div>
+    </div>
+    <div class="http-method">
+      <div class="http-method-badge post">POST</div>
+      <div class="http-method-body">
+        <h5>Créer une ressource</h5>
+        <p>Envoyer des données pour créer un enregistrement (formulaire, upload…).</p>
+      </div>
+    </div>
+    <div class="http-method">
+      <div class="http-method-badge put">PUT / PATCH</div>
+      <div class="http-method-body">
+        <h5>Modifier une ressource</h5>
+        <p>Mettre à jour un enregistrement existant. PUT remplace tout, PATCH modifie partiellement.</p>
+      </div>
+    </div>
+    <div class="http-method">
+      <div class="http-method-badge delete">DELETE</div>
+      <div class="http-method-body">
+        <h5>Supprimer une ressource</h5>
+        <p>Demander la suppression d'un enregistrement identifié.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="gold">Les codes de statut HTTP</h3>
+  <p>La réponse du serveur commence toujours par un code à 3 chiffres qui résume le résultat :</p>
+
+  <div class="http-status-grid">
+    <div class="http-status s2">200 OK</div>
+    <div class="http-status s2">201 Created</div>
+    <div class="http-status s3">301 Moved</div>
+    <div class="http-status s3">304 Not Modified</div>
+    <div class="http-status s4">400 Bad Request</div>
+    <div class="http-status s4">401 Unauthorized</div>
+    <div class="http-status s4">403 Forbidden</div>
+    <div class="http-status s4">404 Not Found</div>
+    <div class="http-status s5">500 Server Error</div>
+    <div class="http-status s5">503 Unavailable</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Exemple — Requête HTTP brute</span>
+    </div>
+    <pre><code><span class="cm">// Ce que le navigateur envoie :</span>
+<span class="op">GET</span> /api/transactions <span class="op">HTTP/1.1</span>
+Host: monbudget.example.com
+Accept: application/json
+Authorization: Bearer abc123
+
+<span class="cm">// Ce que le serveur répond :</span>
+<span class="op">HTTP/1.1 200 OK</span>
+Content-Type: application/json
+Content-Length: 342
+
+[{ <span class="st">"id"</span>: <span class="st">"1"</span>, <span class="st">"description"</span>: <span class="st">"Salaire"</span>, <span class="st">"amount"</span>: <span class="nm">3200</span> }, …]</code></pre>
+  </div>
+
+  <h3 class="gold">Et notre application Suivi de Budget ?</h3>
+  <p>Notre app est un cas particulier : elle n'a <strong>aucun serveur</strong>. Tout tourne dans le navigateur.</p>
+
+  <div class="cs-contrast">
+    <div class="cs-contrast-card">
+      <h5>🌍 Application classique avec serveur</h5>
+      <p>Le navigateur envoie des requêtes HTTP. Le serveur répond avec les données depuis une base de données. Les données sont partagées entre utilisateurs.</p>
+    </div>
+    <div class="cs-contrast-card highlight">
+      <h5>⚡ Notre app — sans serveur</h5>
+      <p>Tout s'exécute dans le navigateur. Les données sont stockées en <span class="ic">localStorage</span> sur ton ordinateur. Aucune requête réseau pour les données — tout est instantané et 100% privé.</p>
+    </div>
+  </div>
+
+  <div class="info-box gold">
+    <strong>Quand tu ouvres l'app via <span class="ic">npm run dev</span></strong>
+    Le serveur de développement Vite sert les <em>fichiers</em> (HTML, JS, CSS) via HTTP — c'est normal. Mais une fois la page chargée, aucune autre requête n'est faite pour les données : React et localStorage prennent le relais.
+  </div>
+
+  <div class="info-box blue">
+    <strong>Pour aller plus loin : les API REST</strong>
+    Quand une app a un serveur, elle expose généralement une <strong>API REST</strong> — une collection d'URLs (endpoints) auxquelles le front-end envoie des requêtes GET/POST/PUT/DELETE. C'est le modèle standard des applications web modernes (Twitter, Notion, GitHub…).
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 3 — LES OUTILS -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <section class="section" id="outils">
   <h2>Les outils utilisés</h2>
@@ -602,16 +994,27 @@ npm run dev</code></pre>
 
   <div class="arch">
 <span class="folder">src/</span>
-├── <span class="folder">components/</span>          <span class="desc">← Les briques visuelles de l'interface</span>
-│   ├── <span class="file">Dashboard.jsx</span>    <span class="desc">← Les 3 cartes de statistiques</span>
-│   ├── <span class="file">TransactionForm.jsx</span> <span class="desc">← Le formulaire d'ajout</span>
-│   ├── <span class="file">TransactionList.jsx</span> <span class="desc">← La liste des transactions</span>
-│   └── <span class="file">CategoryChart.jsx</span>  <span class="desc">← Le graphique donut</span>
+├── <span class="folder">components/</span>              <span class="desc">← Les briques visuelles de l'interface</span>
+│   ├── <span class="file">Dashboard.jsx</span>        <span class="desc">← Les 3 cartes de statistiques</span>
+│   ├── <span class="file">TransactionForm.jsx</span>  <span class="desc">← Formulaire d'ajout + catégories perso</span>
+│   ├── <span class="file">TransactionList.jsx</span>  <span class="desc">← Historique, tri, filtre, export/import</span>
+│   ├── <span class="file">TransactionEditModal.jsx</span> <span class="desc">← Modale de modification</span>
+│   ├── <span class="file">BudgetManager.jsx</span>    <span class="desc">← Budgets par catégorie</span>
+│   ├── <span class="file">CategoryChart.jsx</span>    <span class="desc">← Graphique donut répartition</span>
+│   ├── <span class="file">SavingsGoals.jsx</span>     <span class="desc">← Objectifs d'épargne</span>
+│   └── <span class="file">YearlyChart.jsx</span>      <span class="desc">← Graphique annuel en barres</span>
 ├── <span class="folder">hooks/</span>
-│   └── <span class="file">useTransactions.js</span>  <span class="desc">← Toute la logique métier</span>
-├── <span class="file">constants.js</span>         <span class="desc">← Catégories, formatage des montants</span>
-├── <span class="file">App.jsx</span>             <span class="desc">← Composant racine qui assemble tout</span>
-└── <span class="file">App.css</span>             <span class="desc">← Tous les styles de l'application</span>
+│   ├── <span class="file">useTransactions.js</span>   <span class="desc">← Transactions, calculs, filtre mois</span>
+│   ├── <span class="file">useCustomCategories.js</span> <span class="desc">← Catégories personnalisées (nouveau)</span>
+│   ├── <span class="file">useBudgets.js</span>        <span class="desc">← Budgets par catégorie</span>
+│   ├── <span class="file">useGoals.js</span>          <span class="desc">← Objectifs d'épargne</span>
+│   └── <span class="file">useTheme.js</span>          <span class="desc">← Thème clair/sombre</span>
+├── <span class="folder">utils/</span>
+│   ├── <span class="file">csv.js</span>               <span class="desc">← Export/import CSV</span>
+│   └── <span class="file">backup.js</span>            <span class="desc">← Sauvegarde/restauration JSON (nouveau)</span>
+├── <span class="file">constants.js</span>             <span class="desc">← Catégories, formatage des montants</span>
+├── <span class="file">App.jsx</span>                 <span class="desc">← Composant racine qui assemble tout</span>
+└── <span class="file">App.css</span>                 <span class="desc">← Tous les styles de l'application</span>
   </div>
 
   <!-- ÉTAPE 3 -->
@@ -1130,10 +1533,51 @@ git push origin v1.0.0</code></pre>
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    const idx = ['bases','outils','construction','docker','recapitulatif'].indexOf(id);
+    const idx = ['bases','clientserveur','outils','construction','docker','recapitulatif'].indexOf(id);
     document.querySelectorAll('.nav-btn')[idx].classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // ── HTTP Animation ──────────────────────────────────────
+  (function() {
+    function g(id) { return document.getElementById(id); }
+    if (!g('httpAnim')) return;
+
+    function resetAnim(el) {
+      el.classList.remove('anim-req', 'anim-res');
+      void el.offsetWidth; // force reflow → permet de rejouer l'animation
+    }
+
+    // [clientClass, serverClass, sendReq, sendRes, clientTxt, serverTxt, delayMs]
+    const phases = [
+      ['',                 '',                  false, false, 'Prêt',                  'En attente…',       1000],
+      ['cs-active-client', '',                  true,  false, 'Envoi de la requête…',  'Réception…',        1300],
+      ['cs-waiting',       'cs-active-server',  false, false, 'En attente de réponse…','Traitement…',       900],
+      ['cs-waiting',       'cs-active-server',  false, true,  'En attente de réponse…','Envoi de la réponse…', 1300],
+      ['cs-active-client', '',                  false, false, 'Page affichée !',        'Prêt',              1000],
+    ];
+
+    let step = 0;
+
+    function tick() {
+      const [cc, sc, rq, rs, ct, st, dur] = phases[step];
+      const req = g('httpReqPill');
+      const res = g('httpResPill');
+
+      g('httpClient').className = 'http-side ' + cc;
+      g('httpServer').className = 'http-side ' + sc;
+      g('httpClientState').textContent = ct;
+      g('httpServerState').textContent = st;
+
+      if (req) { resetAnim(req); if (rq) req.classList.add('anim-req'); }
+      if (res) { resetAnim(res); if (rs) res.classList.add('anim-res'); }
+
+      step = (step + 1) % phases.length;
+      setTimeout(tick, dur);
+    }
+
+    setTimeout(tick, 800);
+  })();
 
   function copyCode(btn) {
     const pre = btn.closest('.code-block').querySelector('pre');

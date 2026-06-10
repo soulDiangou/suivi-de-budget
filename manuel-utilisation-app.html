@@ -496,8 +496,8 @@
   <h1>Maîtriser votre<br><span>Suivi de Budget</span></h1>
   <p class="hero-subtitle">Tout ce qu'il faut savoir pour gérer vos finances personnelles, de la première transaction jusqu'aux fonctionnalités avancées.</p>
   <div class="hero-stats">
-    <div class="hero-stat"><span class="hero-stat-num">8</span><span class="hero-stat-label">Catégories</span></div>
-    <div class="hero-stat"><span class="hero-stat-num">11</span><span class="hero-stat-label">Fonctionnalités</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">∞</span><span class="hero-stat-label">Catégories</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">16</span><span class="hero-stat-label">Fonctionnalités</span></div>
     <div class="hero-stat"><span class="hero-stat-num">100%</span><span class="hero-stat-label">Privé & local</span></div>
   </div>
 </header>
@@ -632,8 +632,8 @@
     </div>
   </div>
 
-  <h3>Les 8 catégories disponibles</h3>
-  <p>Chaque dépense est classée dans une catégorie pour faciliter l'analyse :</p>
+  <h3>Les catégories de dépenses</h3>
+  <p>8 catégories sont incluses par défaut. Vous pouvez en créer autant que vous voulez avec le bouton <strong>+</strong> à côté du sélecteur de catégorie.</p>
   <div class="cat-grid">
     <div class="cat-pill"><div class="cat-pill-dot" style="background:#5B9BD5"></div> Transport</div>
     <div class="cat-pill"><div class="cat-pill-dot" style="background:#C9A84C"></div> Alimentation</div>
@@ -643,6 +643,15 @@
     <div class="cat-pill"><div class="cat-pill-dot" style="background:#E0845C"></div> Vêtements</div>
     <div class="cat-pill"><div class="cat-pill-dot" style="background:#5CD4C4"></div> Loisirs</div>
     <div class="cat-pill"><div class="cat-pill-dot" style="background:#8A9BAD"></div> Autres</div>
+    <div class="cat-pill" style="border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.06)"><div class="cat-pill-dot" style="background:#9370DB"></div> Abonnements <span style="color:var(--gold);font-size:10px;margin-left:4px">+ perso</span></div>
+    <div class="cat-pill" style="border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.06);color:var(--gold);font-size:12px;padding:4px 12px;cursor:default">+ Créer la vôtre…</div>
+  </div>
+  <div class="tip gold" style="margin-top:14px">
+    <span class="tip-icon">🏷️</span>
+    <div class="tip-content">
+      <strong>Catégories personnalisées</strong>
+      Cliquez sur <strong>"+"</strong> à droite du menu Catégorie pour créer vos propres catégories (Abonnements, Animaux, Cadeaux…). Elles apparaissent dans les graphiques, les budgets et les filtres — exactement comme les catégories par défaut.
+    </div>
   </div>
 </section>
 
@@ -699,7 +708,14 @@
       <div class="step-num">5</div>
       <div class="step-body">
         <h4>Pour une dépense : choisissez la catégorie</h4>
-        <p>Un menu déroulant apparaît uniquement pour les dépenses. Choisissez la catégorie la plus proche. Si rien ne correspond, utilisez <strong>"Autres"</strong>.</p>
+        <p>Un menu déroulant apparaît uniquement pour les dépenses. Choisissez la catégorie la plus proche. Si rien ne correspond, utilisez <strong>"Autres"</strong> — ou créez votre propre catégorie en cliquant sur le <strong>bouton "+"</strong> à droite du menu.</p>
+        <div class="tip gold" style="margin-top:10px">
+          <span class="tip-icon">+</span>
+          <div class="tip-content">
+            <strong>Créer une catégorie personnalisée</strong>
+            Cliquez sur <strong>+</strong> → tapez le nom → cliquez "Créer". La nouvelle catégorie est automatiquement sélectionnée et sera disponible partout dans l'application.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -882,26 +898,50 @@
 
   <div class="accordion">
     <button class="accordion-btn" onclick="toggleAcc(this)">
-      <div class="accordion-left"><span class="accordion-icon">📤</span><div><div class="accordion-title">Exporter et importer (CSV)</div><div class="accordion-sub">Sauvegarder ou transférer vos données</div></div></div>
+      <div class="accordion-left"><span class="accordion-icon">↕️</span><div><div class="accordion-title">Trier et filtrer l'historique</div><div class="accordion-sub">Retrouver une transaction rapidement</div></div></div>
       <span class="accordion-arrow">▼</span>
     </button>
     <div class="accordion-body">
-      <p>Au-dessus de l'historique, deux boutons vous permettent d'échanger des données avec d'autres outils :</p>
-      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↓ Export — Télécharger vos données</h4>
-      <p>Cliquez sur <strong>"↓ Export"</strong> pour télécharger toutes vos transactions au format CSV. Ce fichier s'ouvre dans Excel, Google Sheets ou LibreOffice. Utile pour :</p>
-      <ul>
-        <li>Faire une sauvegarde de vos données</li>
-        <li>Analyser en détail dans un tableur</li>
-        <li>Transférer vers une autre application</li>
-      </ul>
+      <p>Au-dessus de la liste des transactions, vous disposez de deux outils pour organiser l'affichage :</p>
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">Tri par colonne</h4>
+      <p>Trois boutons permettent de trier la liste : <strong>Date</strong>, <strong>Montant</strong> et <strong>Catégorie</strong>. Cliquez une première fois pour trier dans un sens, une deuxième fois pour inverser l'ordre (↑ / ↓).</p>
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">Filtre par catégorie</h4>
+      <p>Le menu déroulant à droite des boutons de tri permet d'afficher uniquement les transactions d'une catégorie précise (ou uniquement les revenus). Sélectionnez <strong>"Toutes catégories"</strong> pour revenir à la vue complète.</p>
+      <div class="tip gold">
+        <span class="tip-icon">💡</span>
+        <div class="tip-content">
+          <strong>Analyser une catégorie</strong>
+          Filtrez par "Alimentation" et triez par montant décroissant pour identifier vos dépenses les plus élevées dans cette catégorie. Pratique en fin de mois.
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↑ Import — Importer depuis votre banque</h4>
-      <p>Cliquez sur <strong>"↑ Import"</strong> et sélectionnez un fichier CSV. L'application reconnaît automatiquement les colonnes Date, Description et Montant. Les montants positifs deviennent des revenus, les négatifs des dépenses.</p>
+  <div class="accordion">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      <div class="accordion-left"><span class="accordion-icon">📤</span><div><div class="accordion-title">Exporter, importer et sauvegarder</div><div class="accordion-sub">Protéger et transférer vos données</div></div></div>
+      <span class="accordion-arrow">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Au-dessus de l'historique, quatre boutons vous permettent de gérer vos données :</p>
+
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↓ Export / ↑ Import — Format CSV</h4>
+      <p>Cliquez sur <strong>"↓ Export"</strong> pour télécharger toutes vos transactions au format CSV (compatible Excel, Google Sheets, LibreOffice). Cliquez sur <strong>"↑ Import"</strong> pour importer un CSV de votre banque — les montants positifs deviennent des revenus, les négatifs des dépenses.</p>
       <div class="tip blue">
         <span class="tip-icon">🏦</span>
         <div class="tip-content">
-          <strong>Exporter depuis votre banque</strong>
-          La plupart des banques en ligne (Boursorama, N26, Revolut, Société Générale…) permettent d'exporter votre historique en CSV. Téléchargez-le et importez-le ici.
+          <strong>Importer depuis votre banque</strong>
+          La plupart des banques en ligne (Boursorama, N26, Revolut, Société Générale…) permettent d'exporter votre historique en CSV.
+        </div>
+      </div>
+
+      <h4 style="font-size: 14px; color: var(--text-1); margin: 14px 0 6px;">↓ Backup / ↑ Restore — Sauvegarde complète JSON</h4>
+      <p>Cliquez sur <strong>"↓ Backup"</strong> pour télécharger un fichier JSON contenant <em>toutes</em> vos données : transactions, budgets par catégorie et objectifs d'épargne. Cliquez sur <strong>"↑ Restore"</strong> pour restaurer ce fichier — l'application recharge immédiatement avec toutes vos données.</p>
+      <div class="tip green">
+        <span class="tip-icon">🛡️</span>
+        <div class="tip-content">
+          <strong>Recommandé : Backup mensuel</strong>
+          Contrairement au CSV (transactions uniquement), le Backup JSON sauvegarde aussi vos budgets et objectifs. Faites un Backup chaque mois et conservez le fichier sur votre cloud personnel.
         </div>
       </div>
     </div>
@@ -1019,6 +1059,28 @@
 <section class="section" id="avance">
   <h2>Fonctionnalités avancées</h2>
   <p class="lead">Budget par catégorie, objectifs d'épargne, mode clair… Ces fonctionnalités vous aident à aller plus loin dans la gestion de vos finances.</p>
+
+  <h3>🔔 Alertes budget dépassé</h3>
+  <p>Quand une catégorie dépasse son budget, un badge d'alerte apparaît automatiquement dans l'en-tête de la page — visible en permanence même quand vous faites défiler.</p>
+
+  <div class="mock" style="max-width: 500px;">
+    <div class="mock-body" style="padding: 12px;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 13px; color: var(--text-1); font-weight: 600;">Suivi de Budget</div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: rgba(224,92,92,0.15); border: 1px solid rgba(224,92,92,0.4); color: var(--red); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700;">⚠ 2 dépassés</div>
+          <div style="font-size: 13px; color: var(--gold); font-weight: 700;">2 045,00 €</div>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--red); text-align: center; margin-top: 8px;">↑ Badge rouge visible en permanence</div>
+    </div>
+  </div>
+
+  <ul>
+    <li>Le badge affiche le <strong>nombre de catégories en dépassement</strong></li>
+    <li>Il disparaît automatiquement dès que les dépenses repassent sous le budget</li>
+    <li>Il n'est visible que si vous avez défini au moins un budget</li>
+  </ul>
 
   <h3>💰 Budget par catégorie</h3>
   <p>Fixez un plafond mensuel pour chaque catégorie de dépenses. Par exemple : ne pas dépenser plus de 300 € en alimentation ou 100 € en divertissement.</p>
@@ -1144,6 +1206,64 @@
     </div>
   </div>
 
+  <h3>🏷️ Catégories personnalisées</h3>
+  <p>Les 8 catégories par défaut ne couvrent pas tous les cas. Créez les vôtres pour une analyse plus fine de vos dépenses.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Cliquez sur le bouton "+"</h4>
+        <p>Il se trouve à droite du menu déroulant Catégorie dans le formulaire de dépense. Un panneau s'ouvre juste en dessous.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Tapez le nom et cliquez "Créer"</h4>
+        <p>Exemple : <em>Abonnements</em>, <em>Animaux</em>, <em>Cadeaux</em>… Une couleur est attribuée automatiquement. La nouvelle catégorie est immédiatement sélectionnée dans le menu.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>La catégorie apparaît partout</h4>
+        <p>Dans le graphique de répartition, la gestion des budgets, le filtre de l'historique et la modale d'édition des transactions.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mock" style="max-width: 360px;">
+    <div class="mock-header">
+      <div class="mock-dots"><div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div></div>
+      Panneau de catégories perso ouvert
+    </div>
+    <div class="mock-body">
+      <div style="background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:.75rem .9rem;font-family:'DM Sans',sans-serif;">
+        <div style="font-size:.68rem;color:#7A8499;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem">Mes catégories</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.7rem">
+          <span style="background:rgba(147,112,219,.12);border:1px solid rgba(147,112,219,.3);color:#9370DB;border-radius:5px;padding:.2rem .5rem;font-size:.75rem">Abonnements <span style="opacity:.6">×</span></span>
+          <span style="background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.3);color:#FF8C00;border-radius:5px;padding:.2rem .5rem;font-size:.75rem">Animaux <span style="opacity:.6">×</span></span>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,.06);margin-bottom:.6rem"></div>
+        <div style="font-size:.68rem;color:#C9A84C;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem">Nouvelle catégorie</div>
+        <div style="display:flex;gap:.45rem;align-items:center">
+          <div style="flex:1;background:#0d0f18;border:1px solid rgba(201,168,76,.3);border-radius:5px;color:#DDD8CC;font-size:.82rem;padding:.35rem .6rem;">Cadeaux</div>
+          <div style="background:#C9A84C;color:#0B0D13;border-radius:5px;padding:.35rem .65rem;font-size:.78rem;font-weight:600">Créer</div>
+          <div style="background:transparent;border:1px solid rgba(255,255,255,.1);color:#7A8499;border-radius:5px;padding:.35rem .5rem;font-size:.78rem">✕</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip red">
+    <span class="tip-icon">⚠️</span>
+    <div class="tip-content">
+      <strong>Supprimer une catégorie personnalisée</strong>
+      Cliquez sur le <strong>×</strong> à côté d'un badge dans le panneau. Les transactions existantes qui utilisent cette catégorie ne sont pas supprimées — elles restent visibles dans l'historique, mais n'apparaissent plus dans les graphiques.
+    </div>
+  </div>
+
   <h3>☀ Mode clair / Mode sombre</h3>
   <p>Par défaut, l'application utilise un thème sombre (fond noir, texte clair). Si vous préférez un thème clair plus lumineux, cliquez sur le bouton <strong>☀ / ☾</strong> dans le coin supérieur droit de l'en-tête.</p>
 
@@ -1202,13 +1322,13 @@
       <span class="accordion-arrow">▼</span>
     </button>
     <div class="accordion-body">
-      <p>Vider le cache du navigateur (ou supprimer les données du site) <strong>effacera vos transactions</strong>. Pour éviter de les perdre :</p>
+      <p>Vider le cache du navigateur (ou supprimer les données du site) <strong>effacera toutes vos données</strong>. Pour éviter de les perdre :</p>
       <ul>
-        <li>Exportez régulièrement vos données en CSV (bouton "↓ Export")</li>
-        <li>Conservez ce fichier CSV en lieu sûr (dossier Documents, cloud personnel…)</li>
-        <li>En cas de besoin, réimportez-le avec le bouton "↑ Import"</li>
+        <li>Faites un <strong>Backup JSON</strong> (bouton "↓ Backup") — il sauvegarde transactions, budgets ET objectifs</li>
+        <li>Conservez ce fichier en lieu sûr (dossier Documents, cloud personnel…)</li>
+        <li>En cas de besoin, restaurez-le avec le bouton "↑ Restore"</li>
       </ul>
-      <p>Si vous changez de navigateur ou d'ordinateur, l'export/import CSV est la seule façon de transférer vos données.</p>
+      <p>Si vous changez de navigateur ou d'ordinateur, le Backup JSON est le moyen le plus complet de transférer vos données. Le CSV (transactions uniquement) reste utile pour l'analyse dans un tableur.</p>
     </div>
   </div>
 
@@ -1310,7 +1430,7 @@
 </section>
 
 <footer class="footer">
-  Suivi de Budget v1.0.0 · <strong>Fait pour vous aider à mieux gérer votre argent</strong> · Données 100% locales
+  Suivi de Budget v1.2.0 · <strong>Fait pour vous aider à mieux gérer votre argent</strong> · Données 100% locales
 </footer>
 
 <script>
